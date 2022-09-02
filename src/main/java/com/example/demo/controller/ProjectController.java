@@ -1,61 +1,63 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Project;
-import com.example.demo.mapper.ProjectMapper;
-import com.example.demo.vo.Page;
+
+import com.example.demo.service.IProjectService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
 @RequestMapping("/project")
 public class ProjectController {
 
-    @Resource
-    ProjectMapper projectMapper;
+    @Autowired
+    private IProjectService projectService;
 
-    @GetMapping
+    @GetMapping("/fetch")
     public List<Project> getProject() {
-        return projectMapper.findAll();
+        return projectService.list();
     }
 
-    @PostMapping
-    public String addProject(@RequestBody Project user) {
-        projectMapper.save(user);
-        return "success";
-    }
+    // @PostMapping
+    // public String addProject(@RequestBody Project user) {
+    // projectMapper.save(user);
+    // return "success";
+    // }
 
-    @PutMapping
-    public String updateProject(@RequestBody Project user) {
-        projectMapper.updateById(user);
-        return "success";
-    }
+    // @PutMapping
+    // public String updateProject(@RequestBody Project user) {
+    // projectMapper.updateById(user);
+    // return "success";
+    // }
 
-    @DeleteMapping("/{id}")
-    public String deleteProject(@PathVariable("id") Long id) {
-        projectMapper.deleteById(id);
-        return "success";
-    }
+    // @DeleteMapping("/{id}")
+    // public String deleteProject(@PathVariable("id") Long id) {
+    // projectMapper.deleteById(id);
+    // return "success";
+    // }
 
-    @GetMapping("/{id}")
-    public Project findById(@PathVariable("id") Long id) {
-        return projectMapper.findById(id);
-    }
+    // @GetMapping("/{id}")
+    // public Project findById(@PathVariable("id") Long id) {
+    // return projectMapper.findById(id);
+    // }
 
-    @GetMapping("/page")
-    public Page<Project> findByPage(@RequestParam(defaultValue = "1") Integer pageNum,
-                                 @RequestParam(defaultValue = "10") Integer pageSize) {
-        Integer offset = (pageNum - 1) * pageSize;
-        List<Project> userData = projectMapper.findByPage(offset, pageSize);
-        Page<Project> page = new Page<>();
-        page.setData(userData);
+    // @GetMapping("/page")
+    // public Page<Project> findByPage(@RequestParam(defaultValue = "1") Integer
+    // pageNum,
+    // @RequestParam(defaultValue = "10") Integer pageSize) {
+    // // Integer offset = (pageNum - 1) * pageSize;
+    // // List<Project> userData = projectMapper.findByPage(offset, pageSize);
+    // // Page<Project> page = new Page<>();
+    // // page.setData(userData);
 
-        Integer total = projectMapper.countProject();
-        page.setTotal(total);
-        page.setPageNum(pageNum);
-        page.setPageSize(pageSize);
-        return page;
-    }
+    // // Integer total = projectMapper.countProject();
+    // // page.setTotal(total);
+    // // page.setPageNum(pageNum);
+    // // page.setPageSize(pageSize);
+    // // return page;
+    // }
 
 }
