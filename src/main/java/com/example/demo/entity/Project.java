@@ -1,28 +1,34 @@
 package com.example.demo.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 @Data
 public class Project {
-    private Integer project_id;
-    private String project_name;
-    private Integer province;
-    private Integer city;
-    private Integer region;
-    private String start_time;
+    @TableId(type= IdType.AUTO)
+    private Integer projectId;
+    private String projectName;
+    private String province;
+    private String city;
+    private String region;
+    private String startTime;
 
-
-    private String complete_time;
+    private String completeTime;
     private String username;
     private String nature;
     private String category;
-    private String category_detail;
+    private String categoryDetail;
 
     private String status;
-    private String contract_price;
-    private String final_time;
-    private String estimate_income;
-    private String estimate_cost;
-    private String tax_way;
+    private String contractPrice;
+    private String finalTime;
+    private String estimateIncome;
+    private String estimateCost;
+    private String taxWay;
+    @TableField(exist = false)
+    private String cmd;
 
 }

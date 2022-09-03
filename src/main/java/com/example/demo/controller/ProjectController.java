@@ -1,63 +1,54 @@
 package com.example.demo.controller;
 
+import com.example.demo.controller.common.BaseController;
 import com.example.demo.entity.Project;
 
 import com.example.demo.service.IProjectService;
 
+import org.apache.ibatis.parsing.GenericTokenParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/project")
-public class ProjectController {
+public class ProjectController extends BaseController {
 
     @Autowired
     private IProjectService projectService;
 
     @GetMapping("/fetch")
-    public List<Project> getProject() {
-        return projectService.list();
+    public ResData getProject(HttpServletRequest request) {
+        int page = Integer.parseInt(request.getParameter("page") == null ? "0" : request.getParameter("page"));
+
+        List<Project> list = projectService.list();
+        PageData pageData = new PageData();
+        pageData.setPagenum(page);
+        pageData.setPagesize(pageSize);
+        pageData.setList(list);
+        ResData resData = new ResData();
+        resData.setCode("200");
+        resData.setData(pageData);
+        resData.setMessage("");
+        return resData;
     }
 
-    // @PostMapping
-    // public String addProject(@RequestBody Project user) {
-    // projectMapper.save(user);
-    // return "success";
-    // }
+    @PostMapping("/push")
+    public String addProject(@RequestBody Project project) {
 
-    // @PutMapping
-    // public String updateProject(@RequestBody Project user) {
-    // projectMapper.updateById(user);
-    // return "success";
-    // }
-
-    // @DeleteMapping("/{id}")
-    // public String deleteProject(@PathVariable("id") Long id) {
-    // projectMapper.deleteById(id);
-    // return "success";
-    // }
-
-    // @GetMapping("/{id}")
-    // public Project findById(@PathVariable("id") Long id) {
-    // return projectMapper.findById(id);
-    // }
-
-    // @GetMapping("/page")
-    // public Page<Project> findByPage(@RequestParam(defaultValue = "1") Integer
-    // pageNum,
-    // @RequestParam(defaultValue = "10") Integer pageSize) {
-    // // Integer offset = (pageNum - 1) * pageSize;
-    // // List<Project> userData = projectMapper.findByPage(offset, pageSize);
-    // // Page<Project> page = new Page<>();
-    // // page.setData(userData);
-
-    // // Integer total = projectMapper.countProject();
-    // // page.setTotal(total);
-    // // page.setPageNum(pageNum);
-    // // page.setPageSize(pageSize);
-    // // return page;
-    // }
+        System.out.println( project.getProjectName());
+        if (project.getCmd().equals("edit")) {
+            projectService.updateById(project);
+        } else if (project.getCmd().equals("add")) {
+            projectService.save(project);
+        } else if (project.getCmd().equals("delete")) {
+            projectService.removeById(project);
+        }
+        return "success";
+    }
 
 }

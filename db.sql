@@ -1,4 +1,4 @@
-DROP TABLE `hesuan`.`project`;
+DROP TABLE IF EXISTS `project`;
 CREATE TABLE `project`  (
   `project_id` int(11) NOT NULL AUTO_INCREMENT  COMMENT '项目id',  
   `project_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL DEFAULT ''  COMMENT '项目名称',
