@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
-public class Project {
+public class Project extends Base{
     @TableId(type= IdType.AUTO)
     private Integer projectId;
     private String projectName;
@@ -23,12 +25,11 @@ public class Project {
     private String categoryDetail;
 
     private String status;
-    private String contractPrice;
+    private BigDecimal contractPrice;
     private String finalTime;
-    private String estimateIncome;
-    private String estimateCost;
+    private BigDecimal estimateIncome;
+    private BigDecimal estimateCost;
     private String taxWay;
-    @TableField(exist = false)
-    private String cmd;
+
 
 }
