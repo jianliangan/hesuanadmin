@@ -4,25 +4,26 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
-@Data
-public class Construction extends Base {
-  @TableId(type = IdType.AUTO)
-  private Integer constructionId;
+import java.math.BigDecimal;
 
-  private Integer projectId;
-  private String constructionName;
-  private Integer duration;
+@Data
+public class ProjectIndex extends Base {
+  @TableId(type = IdType.AUTO)
+  private Integer indexId;
+
+  private String projectId;
+  private String nodeName;
   private String comment;
-  private int sort;
-  private int ismerge;
+  private BigDecimal sort;
+  private Integer parentId;
 
   @Override
   public Object getPrimeId() {
-    return constructionId;
+    return indexId;
   }
 
   @Override
   public Object getParentId() {
-    return null;
+    return parentId;
   }
 }

@@ -1,9 +1,9 @@
-package com.example.demo.controller;
+package com.example.demo.controller.budget;
 
 import com.example.demo.controller.common.BaseController;
-import com.example.demo.entity.Project;
+import com.example.demo.entity.budget.BudgetDivision;
 import com.example.demo.service.IMyService;
-import com.example.demo.service.IProjectService;
+import com.example.demo.service.budget.IBudgetDivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,14 +13,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/project")
-public class ProjectController extends BaseController<Project> {
+@RequestMapping("/budget/division")
+public class BudgetDivisionController extends BaseController<BudgetDivision> {
 
-  @Autowired private IProjectService projectService;
+  @Autowired private IBudgetDivisionService budgetDivisionService;
 
   @Override
   protected IMyService getService() {
-    return projectService;
+    return budgetDivisionService;
   }
 
   @Override
@@ -35,16 +35,16 @@ public class ProjectController extends BaseController<Project> {
 
   @Override
   protected WrapperOpt getWrapper(HttpServletRequest request) {
-    int ownId =
+    int projectId =
         Integer.parseInt(
-            request.getParameter("ownId") == null ? "-1" : request.getParameter("ownId"));
+            request.getParameter("projectId") == null ? "-1" : request.getParameter("projectId"));
     WrapperOpt wrapperOpt = new WrapperOpt();
     wrapperOpt.orderIsAsc = true;
     wrapperOpt.orderCondition = true;
     wrapperOpt.orderColumn = new ArrayList<>();
     wrapperOpt.orderColumn.add("sort");
     wrapperOpt.wheres = new HashMap<String, String>();
-    if (ownId != -1) wrapperOpt.wheres.put("own_id", ownId + "");
+    if (projectId != -1) wrapperOpt.wheres.put("project_id", projectId + "");
     return wrapperOpt;
   }
 }

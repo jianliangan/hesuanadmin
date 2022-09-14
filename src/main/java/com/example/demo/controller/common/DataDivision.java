@@ -15,6 +15,6 @@ public class DataDivision {
   String unit; // 计量单位
   String workAmount; // 招标工作量
   String workAmount2; // 招标工作量
-  String synthesis_unitprice; // 综合单价
-  String synthesis_sumprice; // 综合合价
+  String synthesisUnitprice; // 综合单价
+  String synthesisSumprice; // 综合合价
 }

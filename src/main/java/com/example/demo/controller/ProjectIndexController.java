@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/project")
-public class ProjectController extends BaseController<Project> {
+@RequestMapping("/projectindex")
+public class ProjectIndexController extends BaseController<Project> {
 
   @Autowired private IProjectService projectService;
 
@@ -30,21 +30,25 @@ public class ProjectController extends BaseController<Project> {
 
   @Override
   protected String commonPreFetchCheck(HttpServletRequest request) {
+    int projectId =
+        Integer.parseInt(
+            request.getParameter("projectId") == null ? "0" : request.getParameter("projectId"));
+    if (projectId == 0) return "没有选中项目";
     return null;
   }
 
   @Override
   protected WrapperOpt getWrapper(HttpServletRequest request) {
-    int ownId =
+    int projectId =
         Integer.parseInt(
-            request.getParameter("ownId") == null ? "-1" : request.getParameter("ownId"));
+            request.getParameter("projectId") == null ? "0" : request.getParameter("projectId"));
     WrapperOpt wrapperOpt = new WrapperOpt();
     wrapperOpt.orderIsAsc = true;
     wrapperOpt.orderCondition = true;
     wrapperOpt.orderColumn = new ArrayList<>();
     wrapperOpt.orderColumn.add("sort");
     wrapperOpt.wheres = new HashMap<String, String>();
-    if (ownId != -1) wrapperOpt.wheres.put("own_id", ownId + "");
+    wrapperOpt.wheres.put("own_id", projectId + "");
     return wrapperOpt;
   }
 }

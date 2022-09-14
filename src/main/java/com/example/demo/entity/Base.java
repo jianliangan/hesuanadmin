@@ -1,12 +1,22 @@
 package com.example.demo.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class Base {
-    @TableField(exist = false)
-    private String cmd;
+public abstract class Base {
+  @TableField(exist = false)
+  private String cmd;
+
+  @TableField(exist = false)
+  private int sortR;
+
+  @TableField(exist = false)
+  private List<Base> children;
+
+  public abstract Object getPrimeId();
+
+  public abstract Object getParentId();
 }

@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.demo.controller.budget;
 
 import com.example.demo.controller.common.BaseController;
 import com.example.demo.entity.Project;
@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/project")
-public class ProjectController extends BaseController<Project> {
+@RequestMapping("/budget/measure")
+public class BudgetMeasureController extends BaseController<Project> {
 
   @Autowired private IProjectService projectService;
 
