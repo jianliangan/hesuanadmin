@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 
 @Data
 public class BudgetMeasure extends Base {
-  @TableId(type = IdType.AUTO)
-  private Integer measureId;
+  @TableId(type = IdType.INPUT)
+  private String measureId;
 
   private String subject;
 
@@ -29,7 +29,8 @@ public class BudgetMeasure extends Base {
   private BigDecimal profitSumprice;
   private BigDecimal sort;
   private Integer projectId;
-  private Boolean isTotal;
+  private String parentId;
+  private Integer tag;
 
   @Override
   public Object getPrimeId() {
@@ -37,7 +38,10 @@ public class BudgetMeasure extends Base {
   }
 
   @Override
+  public void setPrimeId(Object value) {}
+
+  @Override
   public Object getParentId() {
-    return null;
+    return parentId;
   }
 }

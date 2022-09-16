@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 
 @Data
 public class BudgetDivision extends Base {
-  @TableId(type = IdType.AUTO)
-  private Integer divisionId;
+  @TableId(type = IdType.ASSIGN_ID)
+  private String divisionId;
 
   private String subject;
 
@@ -30,11 +30,17 @@ public class BudgetDivision extends Base {
   private BigDecimal profitSumprice;
   private BigDecimal sort;
   private Integer projectId;
-  private Integer parentId;
+  private String parentId;
+  private Integer tag;
 
   @Override
   public Object getPrimeId() {
     return divisionId;
+  }
+
+  @Override
+  public void setPrimeId(Object value) {
+    divisionId = value.toString();
   }
 
   @Override

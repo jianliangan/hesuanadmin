@@ -176,10 +176,12 @@ public class BudgetController extends BaseController<Construction> {
                           }
                           if (mydata.getCode() != null && mydata.getCode().length() > 0) {
                             mydata2.setCode(mydata.getCode());
-                            mydata2.setIsTotal(false);
+                            mydata2.setDivisionId(getSnowFlake().nextId() + "");
+                            mydata2.setParentId(parentId);
                           } else {
-
-                            mydata2.setIsTotal(true);
+                            parentId = getSnowFlake().nextId() + "";
+                            mydata2.setDivisionId(parentId);
+                            mydata2.setParentId("");
                           }
                           mydata2.setProjectId(projectId);
                           mydata2.setSort(new BigDecimal(i));
@@ -259,11 +261,12 @@ public class BudgetController extends BaseController<Construction> {
                           }
                           if (mydata.getCode() != null && mydata.getCode().length() > 0) {
                             mydata2.setCode(mydata.getCode());
-
-                            mydata2.setIsTotal(false);
+                            mydata2.setMeasureId(getSnowFlake().nextId() + "");
+                            mydata2.setParentId(parentId);
                           } else {
-
-                            mydata2.setIsTotal(true);
+                            parentId = getSnowFlake().nextId() + "";
+                            mydata2.setMeasureId(parentId);
+                            mydata2.setParentId("");
                           }
                           mydata2.setProjectId(projectId);
                           mydata2.setSort(new BigDecimal(i));

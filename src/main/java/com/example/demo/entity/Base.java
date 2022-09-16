@@ -18,5 +18,7 @@ public abstract class Base {
 
   public abstract Object getPrimeId();
 
+  public abstract void setPrimeId(Object value);
+
   public abstract Object getParentId();
 }

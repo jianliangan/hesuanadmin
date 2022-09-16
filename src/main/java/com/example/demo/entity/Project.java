@@ -40,6 +40,9 @@ public class Project extends Base {
   }
 
   @Override
+  public void setPrimeId(Object value) {}
+
+  @Override
   public Object getParentId() {
     return parentId;
   }

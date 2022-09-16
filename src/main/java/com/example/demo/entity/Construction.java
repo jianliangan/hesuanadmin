@@ -22,6 +22,9 @@ public class Construction extends Base {
   }
 
   @Override
+  public void setPrimeId(Object value) {}
+
+  @Override
   public Object getParentId() {
     return null;
   }

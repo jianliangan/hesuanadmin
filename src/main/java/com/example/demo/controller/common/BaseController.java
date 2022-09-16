@@ -91,6 +91,7 @@ public abstract class BaseController<T extends Base> {
   public ResData addGeneral(@RequestBody List<T> rows, HttpServletRequest request) {
     String err = null;
     err = commonPrePushCheck(request);
+    String primeId = "";
     if (err == null) {
       if (getService() == null) {
         err = "服务器错误";
@@ -103,6 +104,11 @@ public abstract class BaseController<T extends Base> {
           if (rows.get(i).getCmd().equals("edit")) {
             getService().updateById(rows.get(i));
           } else if (rows.get(i).getCmd().equals("add")) {
+            if (rows.get(i).getPrimeId() instanceof String) {
+              primeId = getSnowFlake().nextId() + "";
+              rows.get(i).setPrimeId(primeId);
+            }
+            System.out.println(primeId);
             getService().save(rows.get(i));
           } else if (rows.get(i).getCmd().equals("delete")) {
             if (!getService().checkCanDelete(rows.get(i))) {
@@ -121,6 +127,7 @@ public abstract class BaseController<T extends Base> {
       resData.setErr(err);
     }
     resData.setMessage("");
+    resData.setData(primeId);
     return resData;
   }
 
