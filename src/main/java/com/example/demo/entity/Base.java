@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,11 +15,14 @@ public abstract class Base {
   private int sortR;
 
   @TableField(exist = false)
-  private List<Base> children;
+  private List<Base> children = new ArrayList<Base>();
 
-  public abstract Object getPrimeId();
+  @TableField(exist = false)
+  private String source;
 
-  public abstract void setPrimeId(Object value);
+  public abstract Object fetchPrimeId();
 
-  public abstract Object getParentId();
+  public abstract void pushPrimeId(Object value);
+
+  public abstract Object fetchParentId();
 }

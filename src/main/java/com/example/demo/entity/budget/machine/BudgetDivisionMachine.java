@@ -1,7 +1,6 @@
-package com.example.demo.entity.budget;
+package com.example.demo.entity.budget.machine;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.example.demo.entity.Base;
 import lombok.Data;
@@ -9,41 +8,37 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class BudgetMeasure extends Base {
+public class BudgetDivisionMachine extends Base {
   @TableId(type = IdType.INPUT)
-  private String measureId;
-
-  private String subject;
+  private String id;
 
   private String code;
+
   private String category;
+
   private String name;
-  private String distinction;
+  private String type;
+
   private String unit;
+  private BigDecimal loss;
   private BigDecimal have;
-  private BigDecimal workAmount;
-  private BigDecimal synthesisUnitprice;
-  private BigDecimal synthesisSumprice;
-  private BigDecimal manageUnitprice;
-  private BigDecimal profitUnitprice;
-  private BigDecimal manageSumprice;
-  private BigDecimal profitSumprice;
+  private BigDecimal count;
+  private BigDecimal price;
+  private BigDecimal combinedPrice;
+
   private BigDecimal sort;
   private String ownId;
   private String parentId;
   private Integer tag;
 
-  @TableField(exist = false)
-  private String projectName;
-
   @Override
   public Object fetchPrimeId() {
-    return measureId;
+    return id;
   }
 
   @Override
   public void pushPrimeId(Object value) {
-    measureId = value.toString();
+    id = value.toString();
   }
 
   @Override

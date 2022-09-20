@@ -17,15 +17,15 @@ public class Construction extends Base {
   private int ismerge;
 
   @Override
-  public Object getPrimeId() {
+  public Object fetchPrimeId() {
     return constructionId;
   }
 
   @Override
-  public void setPrimeId(Object value) {}
+  public void pushPrimeId(Object value) {}
 
   @Override
-  public Object getParentId() {
+  public Object fetchParentId() {
     return null;
   }
 }

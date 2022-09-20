@@ -16,7 +16,7 @@ public class ProjectIndexServiceImpl extends ServiceImpl<ProjectIndexMapper, Pro
   public boolean checkCanDelete(ProjectIndex instan) {
     log.info("存储数据库成功！{}", instan);
     QueryWrapper wrapper = new QueryWrapper<ProjectIndex>();
-    wrapper.eq("parent_id", instan.getPrimeId());
+    wrapper.eq("parent_id", instan.fetchPrimeId());
     wrapper.last("limit 1");
     ProjectIndex child = getOne(wrapper);
 

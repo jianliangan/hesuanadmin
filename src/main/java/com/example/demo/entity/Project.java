@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 
 @Data
 public class Project extends Base {
-  @TableId(type = IdType.AUTO)
-  private Integer projectId;
+  @TableId(type = IdType.INPUT)
+  private String projectId;
 
   private String projectName;
   private String province;
@@ -30,20 +30,22 @@ public class Project extends Base {
   private BigDecimal estimateCost;
   private String taxWay;
 
-  private Integer parentId;
+  private String parentId;
   private Integer sort;
-  private Integer ownId;
+  private String ownId;
 
   @Override
-  public Object getPrimeId() {
+  public Object fetchPrimeId() {
     return projectId;
   }
 
   @Override
-  public void setPrimeId(Object value) {}
+  public void pushPrimeId(Object value) {
+    projectId = value.toString();
+  }
 
   @Override
-  public Object getParentId() {
+  public Object fetchParentId() {
     return parentId;
   }
 }

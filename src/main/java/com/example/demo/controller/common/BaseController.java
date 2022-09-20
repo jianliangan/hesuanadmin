@@ -42,7 +42,7 @@ public abstract class BaseController<T extends Base> {
   public ResData getGeneral(HttpServletRequest request) {
     String err = null;
     PageData pageData = new PageData();
-    if (getService() == null) {
+    if (fetchService() == null) {
       err = "服务器错误";
     }
     if (err == null) {
@@ -53,17 +53,13 @@ public abstract class BaseController<T extends Base> {
         int pageIndex =
             Integer.parseInt(
                 request.getParameter("page") == null ? "0" : request.getParameter("page"));
-        int projectId =
-            Integer.parseInt(
-                request.getParameter("projectId") == null
-                    ? "0"
-                    : request.getParameter("projectId"));
+
         pageIndex = pageIndex == 0 ? 1 : pageIndex;
-        // List<T> list = getService().list();
+        // List<T> list = fetchService().list();
 
         Page<T> page = new Page(pageIndex, pageSize);
-        WrapperOpt wrapperOpt = getWrapper(request);
-        IPage userPage = getService().page(page, parseWrapperOption(wrapperOpt));
+        WrapperOpt wrapperOpt = fetchWrapper(request);
+        IPage userPage = fetchService().page(page, parseWrapperOption(wrapperOpt));
         System.out.println(",,,,,,,,,," + userPage);
         // userPage.getRecords().forEach(System.out::println);
         List<T> list = userPage.getRecords();
@@ -93,7 +89,7 @@ public abstract class BaseController<T extends Base> {
     err = commonPrePushCheck(request);
     String primeId = "";
     if (err == null) {
-      if (getService() == null) {
+      if (fetchService() == null) {
         err = "服务器错误";
       }
       if (rows.size() > 2) {
@@ -102,21 +98,21 @@ public abstract class BaseController<T extends Base> {
       if (err == null) {
         for (Integer i = 0; i < rows.size(); i++) {
           if (rows.get(i).getCmd().equals("edit")) {
-            getService().updateById(rows.get(i));
+            fetchService().updateById(rows.get(i));
           } else if (rows.get(i).getCmd().equals("add")) {
-            if (rows.get(i).getPrimeId() instanceof String) {
-              primeId = getSnowFlake().nextId() + "";
-              rows.get(i).setPrimeId(primeId);
-            }
+
+            primeId = getSnowFlake().nextId() + "";
+            rows.get(i).pushPrimeId(primeId);
+
             System.out.println(primeId);
-            getService().save(rows.get(i));
+            fetchService().save(rows.get(i));
           } else if (rows.get(i).getCmd().equals("delete")) {
-            if (!getService().checkCanDelete(rows.get(i))) {
+            if (!fetchService().checkCanDelete(rows.get(i))) {
 
               err = "删除错误：可能是存在子项，或者存在数据";
               break;
             }
-            getService().removeById(rows.get(i));
+            fetchService().removeById(rows.get(i));
           }
         }
       }
@@ -131,30 +127,19 @@ public abstract class BaseController<T extends Base> {
     return resData;
   }
 
-  private T treeBusinessParse(T d0, List<T> wflist) {
-
-    List list = new ArrayList<T>();
-
-    for (int i = 0; i < wflist.size(); i++) {
-      T value = wflist.get(i);
-      if (value.getParentId().equals(d0.getPrimeId())) {
-
-        wflist.remove(i);
-        list.add(treeBusinessParse(value, wflist));
-        i = -1;
-      }
-    }
-    d0.setChildren(list);
-    return d0;
-  }
-
-  private QueryWrapper parseWrapperOption(WrapperOpt wrapperOpt) {
+  protected QueryWrapper parseWrapperOption(WrapperOpt wrapperOpt) {
     QueryWrapper<T> wrapper = null;
     if (wrapperOpt != null && (wrapperOpt.orderColumn != null || wrapperOpt.wheres != null)) {
       wrapper = new QueryWrapper<T>();
       if (wrapperOpt.orderColumn != null)
         wrapper.orderBy(wrapperOpt.orderCondition, wrapperOpt.orderIsAsc, wrapperOpt.orderColumn);
       if (wrapperOpt.wheres != null) wrapper.allEq(wrapperOpt.wheres);
+      if (wrapperOpt.ins != null && wrapperOpt.ins.size() > 0) {
+        for (Map.Entry<String, List<String>> entry : wrapperOpt.ins.entrySet()) {
+          String mapKey = entry.getKey();
+          wrapper.in(mapKey, entry.getValue().toArray());
+        }
+      }
     }
     return wrapper;
   }
@@ -167,7 +152,7 @@ public abstract class BaseController<T extends Base> {
    */
   @GetMapping("/tree")
   public ResData getTree(HttpServletRequest request) {
-    if (getService() == null) {
+    if (fetchService() == null) {
       return null;
     }
     String rootId = request.getParameter("rootId"); // 只用树做对比不能用在where后面
@@ -180,9 +165,9 @@ public abstract class BaseController<T extends Base> {
     if (err == null) {
 
       Page<T> page = new Page(pageIndex, 500);
-      WrapperOpt wrapperOpt = getWrapper(request);
+      WrapperOpt wrapperOpt = fetchWrapper(request);
 
-      userPage = getService().page(page, parseWrapperOption(wrapperOpt));
+      userPage = fetchService().page(page, parseWrapperOption(wrapperOpt));
       System.out.println(",,,,,,,,,," + userPage);
       // userPage.getRecords().forEach(System.out::println);
       List<T> list = userPage.getRecords();
@@ -193,9 +178,9 @@ public abstract class BaseController<T extends Base> {
       relist = new ArrayList<T>();
       for (int i = 0; i < list.size(); i++) {
         T value = list.get(i);
-        if (value.getParentId().toString().equals(rootId)) {
+        if (value.fetchParentId().toString().equals(rootId)) {
           list.remove(i);
-          relist.add(treeBusinessParse(value, list));
+          relist.add((T) fetchService().treeBusinessParse(value, list));
           i = -1;
         }
       }
@@ -215,9 +200,9 @@ public abstract class BaseController<T extends Base> {
     return resData;
   }
 
-  protected abstract IMyService getService();
+  protected abstract IMyService fetchService();
 
-  protected abstract WrapperOpt getWrapper(HttpServletRequest request);
+  protected abstract WrapperOpt fetchWrapper(HttpServletRequest request);
 
   protected abstract String commonPrePushCheck(HttpServletRequest request);
 
@@ -231,5 +216,6 @@ public abstract class BaseController<T extends Base> {
     public boolean orderIsAsc;
     public List<String> orderColumn;
     public Map<String, String> wheres;
+    public Map<String, List<String>> ins;
   }
 }

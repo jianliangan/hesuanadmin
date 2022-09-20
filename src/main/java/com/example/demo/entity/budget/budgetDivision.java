@@ -1,6 +1,7 @@
 package com.example.demo.entity.budget;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.example.demo.entity.Base;
 import lombok.Data;
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 public class BudgetDivision extends Base {
-  @TableId(type = IdType.ASSIGN_ID)
+  @TableId(type = IdType.INPUT)
   private String divisionId;
 
   private String subject;
@@ -29,22 +30,25 @@ public class BudgetDivision extends Base {
   private BigDecimal manageSumprice;
   private BigDecimal profitSumprice;
   private BigDecimal sort;
-  private Integer projectId;
+  private String ownId;
   private String parentId;
   private Integer tag;
 
+  @TableField(exist = false)
+  private String projectName;
+
   @Override
-  public Object getPrimeId() {
+  public Object fetchPrimeId() {
     return divisionId;
   }
 
   @Override
-  public void setPrimeId(Object value) {
+  public void pushPrimeId(Object value) {
     divisionId = value.toString();
   }
 
   @Override
-  public Object getParentId() {
+  public Object fetchParentId() {
     return parentId;
   }
 }

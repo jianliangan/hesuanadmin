@@ -19,7 +19,7 @@ public class ProjectController extends BaseController<Project> {
   @Autowired private IProjectService projectService;
 
   @Override
-  protected IMyService getService() {
+  protected IMyService fetchService() {
     return projectService;
   }
 
@@ -34,17 +34,16 @@ public class ProjectController extends BaseController<Project> {
   }
 
   @Override
-  protected WrapperOpt getWrapper(HttpServletRequest request) {
-    int ownId =
-        Integer.parseInt(
-            request.getParameter("ownId") == null ? "-1" : request.getParameter("ownId"));
+  protected WrapperOpt fetchWrapper(HttpServletRequest request) {
+    String ownId = request.getParameter("ownId") == null ? "" : request.getParameter("ownId");
+
     WrapperOpt wrapperOpt = new WrapperOpt();
     wrapperOpt.orderIsAsc = true;
     wrapperOpt.orderCondition = true;
     wrapperOpt.orderColumn = new ArrayList<>();
     wrapperOpt.orderColumn.add("sort");
     wrapperOpt.wheres = new HashMap<String, String>();
-    if (ownId != -1) wrapperOpt.wheres.put("own_id", ownId + "");
+    if (ownId != "") wrapperOpt.wheres.put("own_id", ownId);
     return wrapperOpt;
   }
 }

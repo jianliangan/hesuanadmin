@@ -2,9 +2,6 @@ package com.example.demo.controller.common;
 
 import lombok.Data;
 
-// @Getter
-// @Setter
-// @EqualsAndHashCode
 @Data
 public class DataDivision {
   String sort; // 序号

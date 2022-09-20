@@ -17,7 +17,7 @@ public class ConstructionController extends BaseController<Construction> {
   @Autowired private IConstructionService constructionService;
 
   @Override
-  protected IMyService getService() {
+  protected IMyService fetchService() {
     return constructionService;
   }
 
@@ -32,7 +32,7 @@ public class ConstructionController extends BaseController<Construction> {
   }
 
   @Override
-  protected WrapperOpt getWrapper(HttpServletRequest request) {
+  protected WrapperOpt fetchWrapper(HttpServletRequest request) {
     WrapperOpt wrapperOpt = new WrapperOpt();
     wrapperOpt.orderIsAsc = true;
     wrapperOpt.orderCondition = true;

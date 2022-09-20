@@ -10,11 +10,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.demo.controller.common.BaseController;
 import com.example.demo.controller.common.DataDivision;
 import com.example.demo.controller.common.DataMeasure;
+import com.example.demo.controller.common.DataOther;
 import com.example.demo.controller.common.storage.StorageService;
 import com.example.demo.entity.Construction;
 import com.example.demo.entity.budget.BudgetDivision;
 import com.example.demo.entity.budget.BudgetMeasure;
+import com.example.demo.entity.budget.BudgetOther;
 import com.example.demo.service.IMyService;
+import com.example.demo.service.IProjectService;
 import com.example.demo.service.budget.IBudgetDivisionService;
 import com.example.demo.service.budget.IBudgetMeasureService;
 import com.example.demo.service.budget.IBudgetOtherService;
@@ -39,9 +42,10 @@ import java.util.List;
 public class BudgetController extends BaseController<Construction> {
   @Autowired private ApplicationContext applicationContext;
   private final StorageService storageService;
-  @Autowired private IBudgetDivisionService divisionService;
-  @Autowired private IBudgetMeasureService mydata2Service;
-  @Autowired private IBudgetOtherService otherService;
+  @Autowired private IBudgetDivisionService budgetDivisionService;
+  @Autowired private IBudgetMeasureService budgetMeasureService;
+  @Autowired private IBudgetOtherService budgetOtherService;
+  @Autowired private IProjectService projectService;
 
   @Autowired
   public BudgetController(StorageService storageService) {
@@ -49,12 +53,12 @@ public class BudgetController extends BaseController<Construction> {
   }
 
   @Override
-  protected IMyService getService() {
+  protected IMyService fetchService() {
     return null;
   }
 
   @Override
-  protected WrapperOpt getWrapper(HttpServletRequest request) {
+  protected WrapperOpt fetchWrapper(HttpServletRequest request) {
     return null;
   }
 
@@ -65,14 +69,13 @@ public class BudgetController extends BaseController<Construction> {
 
   @Override
   protected String commonPreFetchCheck(HttpServletRequest request) {
-    int projectId =
-        Integer.parseInt(
-            request.getParameter("projectId") == null ? "0" : request.getParameter("projectId"));
-    if (projectId == 0) return "没有选中项目";
+
+    if (request.getParameter("ownId") == null || request.getParameter("ownId").length() == 0)
+      return "没有选中项目";
     return null;
   }
 
-  protected IService getService2() {
+  protected IService fetchService2() {
     return null;
   }
 
@@ -86,9 +89,9 @@ public class BudgetController extends BaseController<Construction> {
     String err = null;
     err = commonPreFetchCheck(request);
     if (err == null) {
-      int projectId =
-          Integer.parseInt(
-              request.getParameter("projectId") == null ? "0" : request.getParameter("projectId"));
+      String ownId = request.getParameter("ownId") == null ? "" : request.getParameter("ownId");
+      String selectId =
+          request.getParameter("selectId") == null ? "" : request.getParameter("selectId");
 
       String filePath = storageService.store(file);
       // 解析
@@ -181,11 +184,11 @@ public class BudgetController extends BaseController<Construction> {
                           } else {
                             parentId = getSnowFlake().nextId() + "";
                             mydata2.setDivisionId(parentId);
-                            mydata2.setParentId("");
+                            mydata2.setParentId(selectId);
                           }
-                          mydata2.setProjectId(projectId);
-                          mydata2.setSort(new BigDecimal(i));
-                          divisionService.save(mydata2);
+                          mydata2.setOwnId(selectId);
+                          mydata2.setSort(new BigDecimal(i + 1));
+                          budgetDivisionService.save(mydata2);
                         }
                       }
                     })
@@ -266,17 +269,90 @@ public class BudgetController extends BaseController<Construction> {
                           } else {
                             parentId = getSnowFlake().nextId() + "";
                             mydata2.setMeasureId(parentId);
-                            mydata2.setParentId("");
+                            mydata2.setParentId(selectId);
                           }
-                          mydata2.setProjectId(projectId);
-                          mydata2.setSort(new BigDecimal(i));
-                          mydata2Service.save(mydata2);
+                          mydata2.setOwnId(selectId);
+                          mydata2.setSort(new BigDecimal(i + 1));
+                          budgetMeasureService.save(mydata2);
+                        }
+                      }
+                    })
+                .build();
+        ReadSheet readSheet3 =
+            EasyExcel.readSheet(4)
+                .head(DataOther.class)
+                .registerReadListener(
+                    new ReadListener<DataOther>() {
+                      /** 单次缓存的数据量 */
+                      public static final int BATCH_COUNT = 100;
+
+                      public int start = -1;
+                      /** 临时存储 */
+                      private List<DataOther> cachedDataList =
+                          ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+
+                      @Override
+                      public void invoke(DataOther data, AnalysisContext context) {
+
+                        if (data.getSort() != null) {
+                          if (data.getSort().length() > 5) {
+                            if (data.getSort().substring(0, 5).equals("工程名称：")) {
+                              start = 0;
+                            }
+                          } else if (data.getSort().length() > 0) {
+                            if (data.getSort().substring(0, 1).equals("/")) {
+                              start = -1;
+                            }
+                          } else if (data.getSort().length() == 0) {
+                            start = -1;
+                          }
+                        }
+                        if (start != -1) {
+                          start++;
+                        } else {
+                          return;
+                        }
+                        if (start > 3) { // 因为从1开始的
+                          cachedDataList.add(data);
+                          log.info("{}", data);
+                          if (cachedDataList.size() >= BATCH_COUNT) {
+                            saveData();
+                            // 存储完成清理 list
+                            cachedDataList = ListUtils.newArrayListWithExpectedSize(BATCH_COUNT);
+                          }
+                        }
+                      }
+
+                      @Override
+                      public void doAfterAllAnalysed(AnalysisContext context) {
+                        saveData();
+                      }
+
+                      /** 加上存储数据库 */
+                      private void saveData() {
+                        String parentId = "";
+                        for (int i = 0; i < cachedDataList.size(); i++) {
+                          DataOther mydata = cachedDataList.get(i);
+                          BudgetOther mydata2 = new BudgetOther();
+
+                          mydata2.setName(mydata.getName());
+                          if (NumberUtils.isCreatable(mydata.getCost())) {
+                            mydata2.setCost(new BigDecimal(mydata.getCost()));
+                          }
+
+                          parentId = getSnowFlake().nextId() + "";
+                          mydata2.setOtherId(parentId);
+                          mydata2.setParentId(selectId);
+                          mydata2.setOwnId(selectId);
+
+                          mydata2.setSort(new BigDecimal(i + 1));
+                          budgetOtherService.save(mydata2);
                         }
                       }
                     })
                 .build();
         // 这里注意 一定要把sheet1 sheet2 一起传进去，不然有个问题就是03版的excel 会读取多次，浪费性能
-        excelReader.read(readSheet1, readSheet2);
+        excelReader.read(readSheet1, readSheet2, readSheet3);
       }
     }
     ResData resData = new ResData();
