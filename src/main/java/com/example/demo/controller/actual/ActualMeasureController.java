@@ -92,8 +92,8 @@ public class ActualMeasureController extends BaseController<ActualMeasure> {
     PageData pageData = null;
     if (err == null) {
       pageData =
-          treeService.<ActualMeasure>treeWithPrice(
-              selectId, ownId, actualMeasureService, treeServiceConvert);
+          ITreeService.<ActualMeasure>getTreeWithPrice(
+              selectId, ownId, actualMeasureService, projectService, treeServiceConvert);
     }
 
     ResData resData = new ResData();

@@ -92,8 +92,8 @@ public class ActualDivisionController extends BaseController<ActualDivision> {
     PageData pageData = null;
     if (err == null) {
       pageData =
-          treeService.<ActualDivision>treeWithPrice(
-              selectId, ownId, actualDivisionService, treeServiceConvert);
+          ITreeService.<ActualDivision>getTreeWithPrice(
+              selectId, ownId, actualDivisionService, projectService, treeServiceConvert);
     }
     ResData resData = new ResData();
     resData.setCode("200");

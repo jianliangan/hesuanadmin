@@ -93,14 +93,15 @@ public class BudgetDivisionController extends BaseController<BudgetDivision> {
     PageData pageData = null;
     if (err == null) {
       pageData =
-          treeService.<BudgetDivision>treeWithPrice(
-              selectId, ownId, budgetDivisionService, treeServiceConvert);
+          ITreeService.<BudgetDivision>getTreeWithPrice(
+              selectId, ownId, budgetDivisionService, projectService, treeServiceConvert);
     }
     ResData resData = new ResData();
     resData.setCode("200");
     if (err != null) {
       resData.setErr(err);
     }
+
     resData.setData(pageData);
     resData.setMessage("");
     return resData;

@@ -91,8 +91,8 @@ public class PlanDivisionController extends BaseController<PlanDivision> {
     PageData pageData = null;
     if (err == null) {
       pageData =
-          treeService.<PlanDivision>treeWithPrice(
-              selectId, ownId, planDivisionService, treeServiceConvert);
+          ITreeService.<PlanDivision>getTreeWithPrice(
+              selectId, ownId, planDivisionService, projectService, treeServiceConvert);
     }
     ResData resData = new ResData();
     resData.setCode("200");

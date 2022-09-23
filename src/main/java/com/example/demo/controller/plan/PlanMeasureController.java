@@ -93,8 +93,8 @@ public class PlanMeasureController extends BaseController<PlanMeasure> {
     PageData pageData = null;
     if (err == null) {
       pageData =
-          treeService.<PlanDivision>treeWithPrice(
-              selectId, ownId, planMeasureService, treeServiceConvert);
+          ITreeService.<PlanDivision>getTreeWithPrice(
+              selectId, ownId, planMeasureService, projectService, treeServiceConvert);
     }
 
     ResData resData = new ResData();

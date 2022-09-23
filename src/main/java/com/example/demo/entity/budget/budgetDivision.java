@@ -3,14 +3,14 @@ package com.example.demo.entity.budget;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.example.demo.entity.Base;
+import com.example.demo.entity.BaseReport;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class BudgetDivision extends Base implements ISumReportService {
+public class BudgetDivision extends BaseReport implements ISumReportService {
   @TableId(type = IdType.INPUT)
   private String divisionId;
 

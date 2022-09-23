@@ -6,6 +6,7 @@ import com.example.demo.entity.Base;
 import com.example.demo.service.IMyService;
 import com.example.demo.service.common.PageData;
 import com.example.demo.service.common.WrapperOpt;
+import com.example.demo.service.process.ITreeService;
 import lombok.Data;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -156,7 +157,7 @@ public abstract class BaseController<T extends Base> {
         T value = list.get(i);
         if (value.fetchParentId().toString().equals(rootId)) {
           list.remove(i);
-          relist.add((T) fetchService().treeBusinessParse(value, list));
+          relist.add((T) ITreeService.treeLoop0(value, (List<Base>) list));
           i = -1;
         }
       }

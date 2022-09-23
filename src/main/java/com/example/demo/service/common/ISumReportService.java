@@ -6,7 +6,6 @@ public interface ISumReportService {
   /**
    * 招标工程量
    *
-   * @param instance
    * @param value
    */
   public void pushWorkAmount(BigDecimal value);

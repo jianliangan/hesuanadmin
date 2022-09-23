@@ -103,8 +103,8 @@ public class BudgetMeasureController extends BaseController<BudgetMeasure> {
     PageData pageData = null;
     if (err == null) {
       pageData =
-          treeService.<BudgetMeasure>treeWithPrice(
-              selectId, ownId, budgetMeasureService, treeServiceConvert);
+          ITreeService.<BudgetMeasure>getTreeWithPrice(
+              selectId, ownId, budgetMeasureService, projectService, treeServiceConvert);
     }
     ResData resData = new ResData();
     resData.setCode("200");
