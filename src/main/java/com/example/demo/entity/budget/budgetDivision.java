@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.example.demo.entity.Base;
+import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class BudgetDivision extends Base {
+public class BudgetDivision extends Base implements ISumReportService {
   @TableId(type = IdType.INPUT)
   private String divisionId;
 
@@ -50,5 +51,38 @@ public class BudgetDivision extends Base {
   @Override
   public Object fetchParentId() {
     return parentId;
+  }
+
+  @Override
+  public void pushWorkAmount(BigDecimal value) {
+    setWorkAmount(value);
+  }
+
+  @Override
+  public void pushSynthesisUnitprice(BigDecimal value) {
+    setSynthesisUnitprice(value);
+  }
+  ;
+
+  @Override
+  public void pushSynthesisSumprice(BigDecimal value) {
+    setSynthesisSumprice(value);
+  }
+
+  @Override
+  public BigDecimal fetchWorkAmount() {
+    return getWorkAmount();
+  }
+  ;
+
+  @Override
+  public BigDecimal fetchSynthesisUnitprice() {
+    return getSynthesisUnitprice();
+  }
+  ;
+
+  @Override
+  public BigDecimal fetchSynthesisSumprice() {
+    return getSynthesisSumprice();
   }
 }

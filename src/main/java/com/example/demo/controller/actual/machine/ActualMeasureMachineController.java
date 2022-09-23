@@ -4,6 +4,7 @@ import com.example.demo.controller.common.BaseController;
 import com.example.demo.entity.actual.machine.ActualMeasureMachine;
 import com.example.demo.service.IMyService;
 import com.example.demo.service.actual.machine.IActualMeasureMachineService;
+import com.example.demo.service.common.WrapperOpt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

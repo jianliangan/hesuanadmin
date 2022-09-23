@@ -1,10 +1,11 @@
 package com.example.demo.controller.common;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.entity.Base;
 import com.example.demo.service.IMyService;
+import com.example.demo.service.common.PageData;
+import com.example.demo.service.common.WrapperOpt;
 import lombok.Data;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public abstract class BaseController<T extends Base> {
   protected int pageSize = 20;
@@ -29,13 +29,6 @@ public abstract class BaseController<T extends Base> {
     String err;
     String message;
     Object data;
-  }
-
-  @Data
-  protected class PageData {
-    long itemTotal;
-    long pageSize;
-    Object list;
   }
 
   @GetMapping("/fetch")
@@ -59,7 +52,7 @@ public abstract class BaseController<T extends Base> {
 
         Page<T> page = new Page(pageIndex, pageSize);
         WrapperOpt wrapperOpt = fetchWrapper(request);
-        IPage userPage = fetchService().page(page, parseWrapperOption(wrapperOpt));
+        IPage userPage = fetchService().page(page, WrapperOpt.parseWrapperOption(wrapperOpt));
         System.out.println(",,,,,,,,,," + userPage);
         // userPage.getRecords().forEach(System.out::println);
         List<T> list = userPage.getRecords();
@@ -127,23 +120,6 @@ public abstract class BaseController<T extends Base> {
     return resData;
   }
 
-  protected QueryWrapper parseWrapperOption(WrapperOpt wrapperOpt) {
-    QueryWrapper<T> wrapper = null;
-    if (wrapperOpt != null && (wrapperOpt.orderColumn != null || wrapperOpt.wheres != null)) {
-      wrapper = new QueryWrapper<T>();
-      if (wrapperOpt.orderColumn != null)
-        wrapper.orderBy(wrapperOpt.orderCondition, wrapperOpt.orderIsAsc, wrapperOpt.orderColumn);
-      if (wrapperOpt.wheres != null) wrapper.allEq(wrapperOpt.wheres);
-      if (wrapperOpt.ins != null && wrapperOpt.ins.size() > 0) {
-        for (Map.Entry<String, List<String>> entry : wrapperOpt.ins.entrySet()) {
-          String mapKey = entry.getKey();
-          wrapper.in(mapKey, entry.getValue().toArray());
-        }
-      }
-    }
-    return wrapper;
-  }
-
   /**
    * 先根据where确定数据范围，然后将这片数据变成树 参数只接收rootId,<where条件> 其中rootId表示范围内从哪里算根 <where条件>用来确定范围</where条件>
    *
@@ -167,7 +143,7 @@ public abstract class BaseController<T extends Base> {
       Page<T> page = new Page(pageIndex, 500);
       WrapperOpt wrapperOpt = fetchWrapper(request);
 
-      userPage = fetchService().page(page, parseWrapperOption(wrapperOpt));
+      userPage = fetchService().page(page, WrapperOpt.parseWrapperOption(wrapperOpt));
       System.out.println(",,,,,,,,,," + userPage);
       // userPage.getRecords().forEach(System.out::println);
       List<T> list = userPage.getRecords();
@@ -207,15 +183,4 @@ public abstract class BaseController<T extends Base> {
   protected abstract String commonPrePushCheck(HttpServletRequest request);
 
   protected abstract String commonPreFetchCheck(HttpServletRequest request);
-
-  protected class WrapperOpt {
-    public WrapperOpt() {}
-    ;
-
-    public boolean orderCondition;
-    public boolean orderIsAsc;
-    public List<String> orderColumn;
-    public Map<String, String> wheres;
-    public Map<String, List<String>> ins;
-  }
 }

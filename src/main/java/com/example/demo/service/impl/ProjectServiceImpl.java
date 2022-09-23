@@ -24,4 +24,6 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project>
     }
     return true;
   }
+
+  public static String abc;
 }

@@ -20,6 +20,8 @@ public abstract class Base {
   @TableField(exist = false)
   private String source;
 
+  public static String ab;
+
   public abstract Object fetchPrimeId();
 
   public abstract void pushPrimeId(Object value);
