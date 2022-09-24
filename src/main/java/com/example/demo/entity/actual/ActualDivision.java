@@ -3,14 +3,14 @@ package com.example.demo.entity.actual;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.example.demo.entity.Base;
+import com.example.demo.entity.BaseReport;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class ActualDivision extends Base implements ISumReportService {
+public class ActualDivision extends BaseReport implements ISumReportService {
   @TableId(type = IdType.INPUT)
   private String divisionId;
 
@@ -58,34 +58,42 @@ public class ActualDivision extends Base implements ISumReportService {
 
   @Override
   public void pushWorkAmount(BigDecimal value) {
-    setWorkAmount(value);
+    if (value == null) {
+      setWorkAmount(new BigDecimal(0));
+    } else setWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
-    setCostUnitprice(value);
+
+    if (value == null) {
+      setCostUnitprice(new BigDecimal(0));
+    } else setCostUnitprice(value);
   }
   ;
 
   @Override
   public void pushSynthesisSumprice(BigDecimal value) {
-    setCostSumprice(value);
+
+    if (value == null) {
+      setCostSumprice(new BigDecimal(0));
+    } else setCostSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount();
+    return getWorkAmount() == null ? new BigDecimal(0) : getWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getCostUnitprice();
+    return getCostUnitprice() == null ? new BigDecimal(0) : getCostUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getCostSumprice();
+    return getCostSumprice() == null ? new BigDecimal(0) : getCostSumprice();
   }
 }

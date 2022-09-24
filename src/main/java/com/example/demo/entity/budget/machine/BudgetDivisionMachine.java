@@ -1,6 +1,7 @@
 package com.example.demo.entity.budget.machine;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.example.demo.entity.Base;
 import lombok.Data;
@@ -30,6 +31,10 @@ public class BudgetDivisionMachine extends Base {
   private String ownId;
   private String parentId;
   private Integer tag;
+  private String subPackage;
+
+  @TableField(exist = false)
+  private String subPackageName;
 
   @Override
   public Object fetchPrimeId() {

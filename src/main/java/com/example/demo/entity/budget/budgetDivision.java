@@ -55,34 +55,40 @@ public class BudgetDivision extends BaseReport implements ISumReportService {
 
   @Override
   public void pushWorkAmount(BigDecimal value) {
-    setWorkAmount(value);
+    if (value == null) {
+      setWorkAmount(new BigDecimal(0));
+    } else setWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
-    setSynthesisUnitprice(value);
+    if (value == null) {
+      setSynthesisUnitprice(new BigDecimal(0));
+    } else setSynthesisUnitprice(value);
   }
   ;
 
   @Override
   public void pushSynthesisSumprice(BigDecimal value) {
-    setSynthesisSumprice(value);
+    if (value == null) {
+      setSynthesisSumprice(new BigDecimal(0));
+    } else setSynthesisSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount();
+    return getWorkAmount() == null ? new BigDecimal(0) : getWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getSynthesisUnitprice();
+    return getSynthesisUnitprice() == null ? new BigDecimal(0) : getSynthesisUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getSynthesisSumprice();
+    return getSynthesisSumprice() == null ? new BigDecimal(0) : getSynthesisSumprice();
   }
 }

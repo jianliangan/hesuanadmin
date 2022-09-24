@@ -2,10 +2,8 @@ package com.example.demo.service.process;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.entity.Base;
+import com.example.demo.entity.BaseReport;
 import com.example.demo.entity.Project;
-import com.example.demo.entity.actual.ActualDivision;
-import com.example.demo.entity.budget.BudgetDivision;
-import com.example.demo.entity.plan.PlanDivision;
 import com.example.demo.service.IMyService;
 import com.example.demo.service.IProjectService;
 import com.example.demo.service.common.ISumReportCompareService;
@@ -97,16 +95,22 @@ public interface ITreeService {
     return pageData;
   }
 
-  public static PageData getTreeWithCompare(
-      String selectId,
-      String ownId,
-      IMyService budgetService,
-      IMyService planService,
-      IMyService actualService,
-      IProjectService projectService,
-      ITreeServiceConvert treeServiceConvert) {
+  public static <
+          T0 extends BaseReport & ISumReportService,
+          T1 extends BaseReport & ISumReportService,
+          T2 extends BaseReport & ISumReportService>
+      PageData getTreeWithCompare(
+          String selectId,
+          String ownId,
+          IMyService t0Service,
+          IMyService t1Service,
+          IMyService t2Service,
+          IProjectService projectService,
+          ITreeServiceConvert treeServiceConvert,
+          ITreeEntityNew treeEntityNew,
+          ITreeEntityNew treeEntityNew2) {
 
-    ArrayList<BudgetDivision> prelist = new ArrayList<BudgetDivision>();
+    ArrayList<T0> prelist = new ArrayList<T0>();
     ArrayList<Base> relist = new ArrayList<Base>();
     // 把所有需要显示的项目相关id放入数组
     List instr = new ArrayList<String>();
@@ -148,7 +152,7 @@ public interface ITreeService {
       treeServiceConvert.convertProject2((Project) tmplist.get(i), prelist);
     }
 
-    // 去查division
+    // 组织条件
     Page page2 = new Page(pageIndex, 1000);
     WrapperOpt wrapperOpt2 = new WrapperOpt();
     wrapperOpt2.orderIsAsc = true;
@@ -159,97 +163,67 @@ public interface ITreeService {
       wrapperOpt2.ins = new HashMap<String, List<String>>();
       wrapperOpt2.ins.put("own_id", instr);
     }
-    // 预算
-    userPage = (Page) budgetService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
-    List<BudgetDivision> listBudget = userPage.getRecords();
-    Map<Object, BudgetDivision> compareList = new HashMap<Object, BudgetDivision>();
+    // 第一个
+    userPage = (Page) t0Service.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
+    List<T0> listBudget = userPage.getRecords();
+    Map<Object, T0> compareList = new HashMap<Object, T0>();
 
-    ArrayList<BudgetDivision> listBudgetCpy = new ArrayList<BudgetDivision>();
+    ArrayList<T0> listBudgetCpy = new ArrayList<T0>();
 
     for (int i = 0; i < listBudget.size(); i++) {
+      listBudgetCpy.add(listBudget.get(i));
       compareList.put(listBudget.get(i).fetchPrimeId(), listBudget.get(i));
     }
-    // 计划
-    userPage = (Page) planService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
-    List<PlanDivision> listPlan = userPage.getRecords();
+    // 第二个
+    userPage = (Page) t1Service.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
+    List<T1> listPlan = userPage.getRecords();
 
     for (int i = 0; i < listPlan.size(); i++) {
-      BudgetDivision budgetDivision = compareList.get(listPlan.get(i).fetchPrimeId());
-      PlanDivision planDivision = listPlan.get(i);
+      T0 t0Division = compareList.get(listPlan.get(i).fetchPrimeId());
+      T1 planDivision = listPlan.get(i);
 
-      if (budgetDivision != null) {
+      if (t0Division != null) {
 
-        budgetDivision.setWorkAmountPlan(planDivision.getWorkAmount());
-        budgetDivision.setSynthesisUnitpricePlan(planDivision.getCostUnitprice());
-        budgetDivision.setSynthesisSumpricePlan(planDivision.getCostSumprice());
+        t0Division.pushWorkAmount2(planDivision.fetchWorkAmount());
+        t0Division.pushSynthesisUnitprice2(planDivision.fetchSynthesisUnitprice());
+        t0Division.pushSynthesisSumprice2(planDivision.fetchSynthesisSumprice());
       } else {
 
-        BudgetDivision tmp = new BudgetDivision();
-        tmp.setWorkAmountActual(new BigDecimal(0));
-        tmp.setSynthesisSumprice(new BigDecimal(0));
-        tmp.setWorkAmount(new BigDecimal(0));
-        tmp.setSource("");
-        tmp.setName(planDivision.getName());
-        tmp.setSort(new BigDecimal(1));
-        tmp.setParentId(planDivision.getParentId());
-        tmp.setOwnId(planDivision.getOwnId());
-        tmp.setDivisionId(planDivision.getDivisionId());
-        tmp.setCategory(planDivision.getCategory());
-        tmp.setCode(planDivision.getCode());
-        tmp.setHave(planDivision.getHave());
-        tmp.setUnit(planDivision.getUnit());
-        tmp.setTag(planDivision.getTag());
-        tmp.setWorkAmountPlan(planDivision.getWorkAmount());
-        tmp.setSynthesisUnitpricePlan(planDivision.getCostUnitprice());
-        tmp.setSynthesisSumpricePlan(planDivision.getCostSumprice());
+        T0 tmp = (T0) treeEntityNew.New(planDivision);
 
         listBudgetCpy.add(tmp);
 
-        compareList.put(planDivision.getDivisionId(), tmp);
+        // compareList.put(planDivision.getDivisionId(), tmp);
       }
     }
-    // 实际
-    userPage = (Page) actualService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
-    List<ActualDivision> listActual = userPage.getRecords();
-    for (int i = 0; i < listActual.size(); i++) {
-      BudgetDivision budgetDivision = compareList.get(listActual.get(i).fetchPrimeId());
-      ActualDivision actualDivision = listActual.get(i);
-      if (budgetDivision != null) {
-        budgetDivision.setWorkAmountPlan(actualDivision.getWorkAmount());
-        budgetDivision.setSynthesisUnitpricePlan(actualDivision.getCostUnitprice());
-        budgetDivision.setSynthesisSumpricePlan(actualDivision.getCostSumprice());
-      } else {
-        BudgetDivision tmp = new BudgetDivision();
-        tmp.setWorkAmountActual(new BigDecimal(0));
-        tmp.setSynthesisSumprice(new BigDecimal(0));
-        tmp.setWorkAmount(new BigDecimal(0));
-        tmp.setSource("");
-        tmp.setName(actualDivision.getName());
-        tmp.setSort(new BigDecimal(1));
-        tmp.setParentId(actualDivision.getParentId());
-        tmp.setOwnId(actualDivision.getOwnId());
-        tmp.setDivisionId(actualDivision.getDivisionId());
-        tmp.setCategory(actualDivision.getCategory());
-        tmp.setCode(actualDivision.getCode());
-        tmp.setHave(actualDivision.getHave());
-        tmp.setUnit(actualDivision.getUnit());
-        tmp.setTag(actualDivision.getTag());
-        tmp.setWorkAmountPlan(actualDivision.getWorkAmount());
-        tmp.setSynthesisUnitpricePlan(actualDivision.getCostUnitprice());
-        tmp.setSynthesisSumpricePlan(actualDivision.getCostSumprice());
+    // 第三个
+    if (t2Service != null) {
+      userPage = (Page) t2Service.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
+      List<T2> listActual = userPage.getRecords();
+      for (int i = 0; i < listActual.size(); i++) {
+        T0 t0Division = compareList.get(listActual.get(i).fetchPrimeId());
+        T2 actualDivision = listActual.get(i);
+        if (t0Division != null) {
+          t0Division.pushWorkAmount2(actualDivision.fetchWorkAmount());
+          t0Division.pushSynthesisUnitprice2(actualDivision.fetchSynthesisUnitprice());
+          t0Division.pushSynthesisSumprice2(actualDivision.fetchSynthesisSumprice());
+        } else {
+          T0 tmp = (T0) treeEntityNew2.New(actualDivision);
 
-        listBudgetCpy.add(tmp);
-        // compareList.put(actualDivision.getDivisionId(), tmp);
+          listBudgetCpy.add(tmp);
+          // compareList.put(actualDivision.getDivisionId(), tmp);
+        }
       }
     }
     // 放入大数组
     prelist.addAll(listBudgetCpy);
-    List<BudgetDivision> resist = new ArrayList<BudgetDivision>();
+
+    List<T0> resist = new ArrayList<T0>();
     treeServiceConvert.convertProject2(project, resist);
 
     // 做树形渲染
 
-    ITreeService.<BudgetDivision>treeLoop2(resist.get(0), prelist);
+    ITreeService.<T0>treeLoop2(resist.get(0), prelist);
 
     PageData pageData = new PageData();
     pageData.setItemTotal(userPage.getTotal());
@@ -257,41 +231,6 @@ public interface ITreeService {
     pageData.setList(resist);
     return pageData;
   }
-  //
-  //  static <T extends Base & ISumReportService> T treeProjectSumCompare(T d0, List<T> wflist) {
-  //
-  //    BigDecimal workAmount = d0.fetchWorkAmount();
-  //    BigDecimal synthesisUnitprice = d0.fetchSynthesisUnitprice();
-  //    BigDecimal synthesisSumprice = d0.fetchSynthesisSumprice();
-  //    List list = new ArrayList<T>();
-  //    for (int i = 0; i < wflist.size(); i++) {
-  //      T value = wflist.get(i);
-  //      if (value.fetchParentId().equals(d0.fetchPrimeId())) {
-  //        wflist.remove(i);
-  //
-  //        T tmp = ITreeService.treeProjectSumCompare(value, wflist);
-  //        workAmount = workAmount.add(tmp.fetchWorkAmount());
-  //        synthesisUnitprice =
-  //            synthesisUnitprice.add(
-  //                tmp.fetchSynthesisUnitprice() == null
-  //                    ? new BigDecimal(0)
-  //                    : tmp.fetchSynthesisUnitprice());
-  //        synthesisSumprice =
-  //            synthesisSumprice.add(
-  //                tmp.fetchSynthesisSumprice() == null
-  //                    ? new BigDecimal(0)
-  //                    : tmp.fetchSynthesisSumprice());
-  //        list.add(tmp);
-  //        i = -1;
-  //      }
-  //    }
-  //    d0.pushWorkAmount(workAmount);
-  //    d0.pushSynthesisUnitprice(synthesisUnitprice);
-  //    d0.pushSynthesisSumprice(synthesisSumprice);
-  //    d0.setChildren(list);
-  //
-  //    return d0;
-  //  }
 
   static <T extends Base & ISumReportService & ISumReportCompareService> T treeLoop2(
       T d0, List<T> wflist) {
@@ -300,13 +239,13 @@ public interface ITreeService {
     BigDecimal synthesisUnitprice = d0.fetchSynthesisUnitprice();
     BigDecimal synthesisSumprice = d0.fetchSynthesisSumprice();
     // plan
-    BigDecimal workAmountPlan = d0.fetchWorkAmountPlan();
-    BigDecimal synthesisUnitpricePlan = d0.fetchSynthesisUnitpricePlan();
-    BigDecimal synthesisSumpricePlan = d0.fetchSynthesisSumpricePlan();
+    BigDecimal workAmount2 = d0.fetchWorkAmount2();
+    BigDecimal synthesisUnitprice2 = d0.fetchSynthesisUnitprice2();
+    BigDecimal synthesisSumprice2 = d0.fetchSynthesisSumprice2();
     // actual
-    BigDecimal workAmountActual = d0.fetchWorkAmountActual();
-    BigDecimal synthesisUnitpriceActual = d0.fetchSynthesisUnitpriceActual();
-    BigDecimal synthesisSumpriceActual = d0.fetchSynthesisSumpriceActual();
+    BigDecimal workAmount3 = d0.fetchWorkAmount3();
+    BigDecimal synthesisUnitprice3 = d0.fetchSynthesisUnitprice3();
+    BigDecimal synthesisSumprice3 = d0.fetchSynthesisSumprice3();
     List list = new ArrayList<T>();
     for (int i = 0; i < wflist.size(); i++) {
       T value = wflist.get(i);
@@ -326,29 +265,29 @@ public interface ITreeService {
                     ? new BigDecimal(0)
                     : tmp.fetchSynthesisSumprice());
         // plan
-        workAmountPlan = workAmountPlan.add(tmp.fetchWorkAmountPlan());
-        synthesisUnitpricePlan =
-            synthesisUnitpricePlan.add(
-                tmp.fetchSynthesisUnitpricePlan() == null
+        workAmount2 = workAmount2.add(tmp.fetchWorkAmount2());
+        synthesisUnitprice2 =
+            synthesisUnitprice2.add(
+                tmp.fetchSynthesisUnitprice2() == null
                     ? new BigDecimal(0)
-                    : tmp.fetchSynthesisUnitpricePlan());
-        synthesisSumpricePlan =
-            synthesisSumpricePlan.add(
-                tmp.fetchSynthesisSumpricePlan() == null
+                    : tmp.fetchSynthesisUnitprice2());
+        synthesisSumprice2 =
+            synthesisSumprice2.add(
+                tmp.fetchSynthesisSumprice2() == null
                     ? new BigDecimal(0)
-                    : tmp.fetchSynthesisSumpricePlan());
+                    : tmp.fetchSynthesisSumprice2());
         // actual
-        workAmountActual = workAmountActual.add(tmp.fetchWorkAmountActual());
-        synthesisUnitpriceActual =
-            synthesisUnitpriceActual.add(
-                tmp.fetchSynthesisUnitpriceActual() == null
+        workAmount3 = workAmount3.add(tmp.fetchWorkAmount3());
+        synthesisUnitprice3 =
+            synthesisUnitprice3.add(
+                tmp.fetchSynthesisUnitprice3() == null
                     ? new BigDecimal(0)
-                    : tmp.fetchSynthesisUnitpriceActual());
-        synthesisSumpriceActual =
-            synthesisSumpriceActual.add(
-                tmp.fetchSynthesisSumpriceActual() == null
+                    : tmp.fetchSynthesisUnitprice3());
+        synthesisSumprice3 =
+            synthesisSumprice3.add(
+                tmp.fetchSynthesisSumprice3() == null
                     ? new BigDecimal(0)
-                    : tmp.fetchSynthesisSumpriceActual());
+                    : tmp.fetchSynthesisSumprice3());
         list.add(tmp);
         i = -1;
       }
@@ -357,13 +296,13 @@ public interface ITreeService {
     d0.pushSynthesisUnitprice(synthesisUnitprice);
     d0.pushSynthesisSumprice(synthesisSumprice);
     // plan
-    d0.pushWorkAmountPlan(workAmountPlan);
-    d0.pushSynthesisUnitpricePlan(synthesisUnitpricePlan);
-    d0.pushSynthesisSumpricePlan(synthesisSumpricePlan);
+    d0.pushWorkAmount2(workAmount2);
+    d0.pushSynthesisUnitprice2(synthesisUnitprice2);
+    d0.pushSynthesisSumprice2(synthesisSumprice2);
     // actual
-    d0.pushWorkAmountActual(workAmountActual);
-    d0.pushSynthesisUnitpriceActual(synthesisUnitpriceActual);
-    d0.pushSynthesisSumpriceActual(synthesisSumpriceActual);
+    d0.pushWorkAmount3(workAmount3);
+    d0.pushSynthesisUnitprice3(synthesisUnitprice3);
+    d0.pushSynthesisSumprice3(synthesisSumprice3);
     d0.setChildren(list);
 
     return d0;

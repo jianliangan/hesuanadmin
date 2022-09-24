@@ -8,78 +8,78 @@ public interface ISumReportCompareService {
    *
    * @param value
    */
-  public void pushWorkAmountPlan(BigDecimal value);
+  public void pushWorkAmount2(BigDecimal value);
 
   /**
    * 成本单价
    *
    * @param value
    */
-  public void pushSynthesisUnitpricePlan(BigDecimal value);
+  public void pushSynthesisUnitprice2(BigDecimal value);
 
   /**
    * 成本总价
    *
    * @param value
    */
-  public void pushSynthesisSumpricePlan(BigDecimal value);
+  public void pushSynthesisSumprice2(BigDecimal value);
   /**
    * 招标工程量
    *
    * @return
    */
-  public BigDecimal fetchWorkAmountPlan();
+  public BigDecimal fetchWorkAmount2();
   /**
    * 成本单价
    *
    * @return
    */
-  public BigDecimal fetchSynthesisUnitpricePlan();
+  public BigDecimal fetchSynthesisUnitprice2();
 
   /**
    * 成本总价
    *
    * @return
    */
-  public BigDecimal fetchSynthesisSumpricePlan();
+  public BigDecimal fetchSynthesisSumprice2();
   ///////////////////
   /**
    * 招标工程量
    *
    * @param value
    */
-  public void pushWorkAmountActual(BigDecimal value);
+  public void pushWorkAmount3(BigDecimal value);
 
   /**
    * 成本单价
    *
    * @param value
    */
-  public void pushSynthesisUnitpriceActual(BigDecimal value);
+  public void pushSynthesisUnitprice3(BigDecimal value);
 
   /**
    * 成本总价
    *
    * @param value
    */
-  public void pushSynthesisSumpriceActual(BigDecimal value);
+  public void pushSynthesisSumprice3(BigDecimal value);
   /**
    * 招标工程量
    *
    * @return
    */
-  public BigDecimal fetchWorkAmountActual();
+  public BigDecimal fetchWorkAmount3();
   /**
    * 成本单价
    *
    * @return
    */
-  public BigDecimal fetchSynthesisUnitpriceActual();
+  public BigDecimal fetchSynthesisUnitprice3();
 
   /**
    * 成本总价
    *
    * @return
    */
-  public BigDecimal fetchSynthesisSumpriceActual();
+  public BigDecimal fetchSynthesisSumprice3();
 }
