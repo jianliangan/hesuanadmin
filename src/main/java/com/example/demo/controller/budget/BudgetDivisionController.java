@@ -83,9 +83,9 @@ public class BudgetDivisionController extends BaseController<BudgetDivision> {
           p1.setDivisionId(project.getProjectId());
           p1.setProjectName(project.getProjectName());
           p1.setSource("project");
-          p1.setWorkAmount(new BigDecimal(0));
-          p1.setSynthesisSumprice(new BigDecimal(0));
-          p1.setSynthesisUnitprice(new BigDecimal(0));
+          //          p1.setBudgetWorkAmount(new BigDecimal(0));
+          //          p1.setBudgetSynthesisSumprice(new BigDecimal(0));
+          //          p1.setBudgetSynthesisUnitprice(new BigDecimal(0));
           list.add(p1);
         };
 

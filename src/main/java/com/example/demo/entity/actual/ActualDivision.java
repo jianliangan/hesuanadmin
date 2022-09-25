@@ -1,14 +1,13 @@
 package com.example.demo.entity.actual;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.entity.BaseReport;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
+@TableName("total_division")
 @Data
 public class ActualDivision extends BaseReport implements ISumReportService {
   @TableId(type = IdType.INPUT)
@@ -23,15 +22,18 @@ public class ActualDivision extends BaseReport implements ISumReportService {
   private String distinction;
   private String unit;
   private BigDecimal have;
-  private BigDecimal workAmount;
+
+  @TableField(updateStrategy = FieldStrategy.NEVER)
   private BigDecimal budgetWorkAmount;
-  private BigDecimal costUnitprice;
-  private BigDecimal costSumprice;
-  private BigDecimal costManprice;
-  private BigDecimal costMaterialsprice;
-  private BigDecimal costMechanicsprice;
-  private BigDecimal costDeviceprice;
-  private BigDecimal costSubpackageprice;
+
+  private BigDecimal actualWorkAmount;
+  private BigDecimal actualCostUnitprice;
+  private BigDecimal actualCostSumprice;
+  private BigDecimal actualCostManprice;
+  private BigDecimal actualCostMaterialsprice;
+  private BigDecimal actualCostMechanicsprice;
+  private BigDecimal actualCostDeviceprice;
+  private BigDecimal actualCostSubpackageprice;
 
   private BigDecimal sort;
   private String ownId;
@@ -59,16 +61,16 @@ public class ActualDivision extends BaseReport implements ISumReportService {
   @Override
   public void pushWorkAmount(BigDecimal value) {
     if (value == null) {
-      setWorkAmount(new BigDecimal(0));
-    } else setWorkAmount(value);
+      setActualWorkAmount(new BigDecimal(0));
+    } else setActualWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
 
     if (value == null) {
-      setCostUnitprice(new BigDecimal(0));
-    } else setCostUnitprice(value);
+      setActualCostUnitprice(new BigDecimal(0));
+    } else setActualCostUnitprice(value);
   }
   ;
 
@@ -76,24 +78,24 @@ public class ActualDivision extends BaseReport implements ISumReportService {
   public void pushSynthesisSumprice(BigDecimal value) {
 
     if (value == null) {
-      setCostSumprice(new BigDecimal(0));
-    } else setCostSumprice(value);
+      setActualCostSumprice(new BigDecimal(0));
+    } else setActualCostSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount() == null ? new BigDecimal(0) : getWorkAmount();
+    return getActualWorkAmount() == null ? new BigDecimal(0) : getActualWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getCostUnitprice() == null ? new BigDecimal(0) : getCostUnitprice();
+    return getActualCostUnitprice() == null ? new BigDecimal(0) : getActualCostUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getCostSumprice() == null ? new BigDecimal(0) : getCostSumprice();
+    return getActualCostSumprice() == null ? new BigDecimal(0) : getActualCostSumprice();
   }
 }

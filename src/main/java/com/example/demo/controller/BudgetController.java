@@ -164,10 +164,10 @@ public class BudgetController extends BaseController<Construction> {
                           mydata2.setUnit(mydata.getUnit());
 
                           if (NumberUtils.isCreatable(mydata.getWorkAmount())) {
-                            mydata2.setWorkAmount(new BigDecimal(mydata.getWorkAmount()));
+                            mydata2.setBudgetWorkAmount(new BigDecimal(mydata.getWorkAmount()));
                           }
                           if (NumberUtils.isCreatable(mydata.getSynthesisUnitprice())) {
-                            mydata2.setSynthesisUnitprice(
+                            mydata2.setBudgetSynthesisUnitprice(
                                 new BigDecimal(mydata.getSynthesisUnitprice()));
                           }
                           log.info(
@@ -175,7 +175,7 @@ public class BudgetController extends BaseController<Construction> {
                               mydata.getSynthesisSumprice(),
                               NumberUtils.isCreatable(mydata.getSynthesisSumprice()));
                           if (NumberUtils.isCreatable(mydata.getSynthesisSumprice())) {
-                            mydata2.setSynthesisSumprice(
+                            mydata2.setBudgetSynthesisSumprice(
                                 new BigDecimal(mydata.getSynthesisSumprice()));
                           }
                           if (mydata.getCode() != null && mydata.getCode().length() > 0) {
@@ -253,14 +253,14 @@ public class BudgetController extends BaseController<Construction> {
                           mydata2.setDistinction(mydata.getDistinction());
                           mydata2.setUnit(mydata.getUnit());
                           if (NumberUtils.isCreatable(mydata.getWorkAmount())) {
-                            mydata2.setWorkAmount(new BigDecimal(mydata.getWorkAmount()));
+                            mydata2.setBudgetWorkAmount(new BigDecimal(mydata.getWorkAmount()));
                           }
                           if (NumberUtils.isCreatable(mydata.getSynthesisUnitprice())) {
-                            mydata2.setSynthesisUnitprice(
+                            mydata2.setBudgetSynthesisUnitprice(
                                 new BigDecimal(mydata.getSynthesisUnitprice()));
                           }
                           if (NumberUtils.isCreatable(mydata.getSynthesisSumprice())) {
-                            mydata2.setSynthesisSumprice(
+                            mydata2.setBudgetSynthesisSumprice(
                                 new BigDecimal(mydata.getSynthesisSumprice()));
                           }
                           if (mydata.getCode() != null && mydata.getCode().length() > 0) {

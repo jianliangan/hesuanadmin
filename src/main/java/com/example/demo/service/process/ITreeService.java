@@ -4,20 +4,81 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.entity.Base;
 import com.example.demo.entity.BaseReport;
 import com.example.demo.entity.Project;
+import com.example.demo.entity.budget.machine.BudgetDivisionMachine;
 import com.example.demo.service.IMyService;
 import com.example.demo.service.IProjectService;
+import com.example.demo.service.actual.machine.IActualDivisionMachineService;
 import com.example.demo.service.common.ISumReportCompareService;
 import com.example.demo.service.common.ISumReportService;
 import com.example.demo.service.common.PageData;
 import com.example.demo.service.common.WrapperOpt;
+import com.example.demo.service.report.ITotalDivisionService;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface ITreeService {
+  public static <T extends Base & ISumReportService> PageData getTreeWithPriceByPackage(
+      String selectId,
+      String ownId,
+      ITotalDivisionService actualDivisionService,
+      IActualDivisionMachineService actualDivisionMachineService,
+      ITreeServiceConvert treeServiceConvert) {
+
+    ArrayList<T> prelist = new ArrayList<T>();
+    ArrayList<Base> relist = new ArrayList<Base>();
+    // 把所有需要显示的项目相关id放入数组
+    List instr = new ArrayList<String>();
+    int pageIndex = 1;
+    // 找到选中的，作为最大的那个节点
+    Page page = new Page(pageIndex, 1000);
+    WrapperOpt wrapperOpt = new WrapperOpt();
+    wrapperOpt.orderIsAsc = true;
+    wrapperOpt.orderCondition = true;
+    wrapperOpt.orderColumn = new ArrayList<>();
+    wrapperOpt.orderColumn.add("sort");
+    wrapperOpt.wheres = new HashMap<String, String>();
+    wrapperOpt.wheres.put("sub_package", selectId);
+    Page userPage =
+        actualDivisionMachineService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt));
+    List<BudgetDivisionMachine> list = userPage.getRecords();
+    // 放入in数组
+    Map tmp = new HashMap<String, String>();
+    for (int i = 0; i < list.size(); i++) {
+      tmp.put(list.get(i).getParentId(), list.get(i).getParentId());
+    }
+    Set tmpset = tmp.keySet();
+
+    // 从项目节点中找到选中节点下面的所有子节点
+
+    // 去查division
+    Page page2 = new Page(pageIndex, 1000);
+    WrapperOpt wrapperOpt2 = new WrapperOpt();
+    wrapperOpt2.orderIsAsc = true;
+    wrapperOpt2.orderCondition = true;
+    wrapperOpt2.orderColumn = new ArrayList<>();
+    wrapperOpt2.orderColumn.add("sort");
+
+    if (tmpset.size() > 0) {
+      wrapperOpt2.ins = new HashMap<String, List<String>>();
+      wrapperOpt2.ins.put("division_id", new ArrayList<String>(tmpset));
+    }
+    userPage = (Page) actualDivisionService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
+    List<T> list2 = userPage.getRecords();
+分包商和项目怎么展示
+    // 放入大数组
+    prelist.addAll(list2);
+    List<T> resist = new ArrayList<T>();
+    // 做树形渲染
+    treeLoop1((T) resist.get(0), prelist);
+    PageData pageData = new PageData();
+    pageData.setItemTotal(userPage.getTotal());
+    pageData.setPageSize(userPage.getSize());
+    pageData.setList(resist);
+
+    return pageData;
+  }
+
   public static <T extends Base & ISumReportService> PageData getTreeWithPrice(
       String selectId,
       String ownId,
@@ -109,7 +170,7 @@ public interface ITreeService {
           ITreeServiceConvert treeServiceConvert,
           ITreeEntityNew treeEntityNew,
           ITreeEntityNew treeEntityNew2) {
-
+    /*
     ArrayList<T0> prelist = new ArrayList<T0>();
     ArrayList<Base> relist = new ArrayList<Base>();
     // 把所有需要显示的项目相关id放入数组
@@ -229,7 +290,8 @@ public interface ITreeService {
     pageData.setItemTotal(userPage.getTotal());
     pageData.setPageSize(userPage.getSize());
     pageData.setList(resist);
-    return pageData;
+    return pageData;*/
+    return null;
   }
 
   static <T extends Base & ISumReportService & ISumReportCompareService> T treeLoop2(
@@ -346,6 +408,19 @@ public interface ITreeService {
     BigDecimal workAmount = d0.fetchWorkAmount();
     BigDecimal synthesisUnitprice = d0.fetchSynthesisUnitprice();
     BigDecimal synthesisSumprice = d0.fetchSynthesisSumprice();
+
+    BigDecimal workAmountBudget = d0.fetchBudgetWorkAmount();
+    BigDecimal synthesisUnitpriceBudget = d0.fetchBudgetSynthesisUnitprice();
+    BigDecimal synthesisSumpriceBudget = d0.fetchBudgetSynthesisSumprice();
+
+    BigDecimal workAmountPlan = d0.fetchPlanWorkAmount();
+    BigDecimal synthesisUnitpricePlan = d0.fetchPlanSynthesisUnitprice();
+    BigDecimal synthesisSumpricePlan = d0.fetchPlanSynthesisSumprice();
+
+    BigDecimal workAmountActual = d0.fetchActualWorkAmount();
+    BigDecimal synthesisUnitpriceActual = d0.fetchActualSynthesisUnitprice();
+    BigDecimal synthesisSumpriceActual = d0.fetchActualSynthesisSumprice();
+
     List list = new ArrayList<T>();
     for (int i = 0; i < wflist.size(); i++) {
       T value = wflist.get(i);
@@ -356,6 +431,21 @@ public interface ITreeService {
         workAmount = workAmount.add(tmp.fetchWorkAmount());
         synthesisUnitprice = synthesisUnitprice.add(tmp.fetchSynthesisUnitprice());
         synthesisSumprice = synthesisSumprice.add(tmp.fetchSynthesisSumprice());
+
+        workAmountBudget = workAmountBudget.add(tmp.fetchBudgetWorkAmount());
+        synthesisUnitpriceBudget =
+            synthesisUnitpriceBudget.add(tmp.fetchBudgetSynthesisUnitprice());
+        synthesisSumpriceBudget = synthesisSumpriceBudget.add(tmp.fetchBudgetSynthesisSumprice());
+
+        workAmountPlan = workAmountPlan.add(tmp.fetchPlanWorkAmount());
+        synthesisUnitpricePlan = synthesisUnitpricePlan.add(tmp.fetchPlanSynthesisUnitprice());
+        synthesisSumpricePlan = synthesisSumpricePlan.add(tmp.fetchPlanSynthesisSumprice());
+
+        workAmountActual = workAmountActual.add(tmp.fetchActualWorkAmount());
+        synthesisUnitpriceActual =
+            synthesisUnitpriceActual.add(tmp.fetchActualSynthesisUnitprice());
+        synthesisSumpriceActual = synthesisSumpriceActual.add(tmp.fetchActualSynthesisSumprice());
+
         list.add(tmp);
         ;
         i = -1;
@@ -364,6 +454,19 @@ public interface ITreeService {
     d0.pushWorkAmount(workAmount);
     d0.pushSynthesisUnitprice(synthesisUnitprice);
     d0.pushSynthesisSumprice(synthesisSumprice);
+
+    d0.pushBudgetWorkAmount(workAmountBudget);
+    d0.pushBudgetSynthesisUnitprice(synthesisUnitpriceBudget);
+    d0.pushBudgetSynthesisSumprice(synthesisSumpriceBudget);
+
+    d0.pushPlanWorkAmount(workAmountPlan);
+    d0.pushPlanSynthesisUnitprice(synthesisUnitpricePlan);
+    d0.pushPlanSynthesisSumprice(synthesisSumpricePlan);
+
+    d0.pushActualWorkAmount(workAmountActual);
+    d0.pushActualSynthesisUnitprice(synthesisUnitpriceActual);
+    d0.pushActualSynthesisSumprice(synthesisSumpriceActual);
+
     d0.setChildren(list);
 
     return d0;

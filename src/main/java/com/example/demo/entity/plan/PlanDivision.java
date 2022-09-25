@@ -1,16 +1,16 @@
 package com.example.demo.entity.plan;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.entity.BaseReport;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
+@TableName("total_division")
 @Data
 public class PlanDivision extends BaseReport implements ISumReportService {
+
   @TableId(type = IdType.INPUT)
   private String divisionId;
 
@@ -23,15 +23,18 @@ public class PlanDivision extends BaseReport implements ISumReportService {
   private String distinction;
   private String unit;
   private BigDecimal have;
-  private BigDecimal workAmount;
+
+  @TableField(updateStrategy = FieldStrategy.NEVER)
   private BigDecimal budgetWorkAmount;
-  private BigDecimal costUnitprice;
-  private BigDecimal costSumprice;
-  private BigDecimal costManprice;
-  private BigDecimal costMaterialsprice;
-  private BigDecimal costMechanicsprice;
-  private BigDecimal costDeviceprice;
-  private BigDecimal costSubpackageprice;
+
+  private BigDecimal planWorkAmount;
+  private BigDecimal planCostUnitprice;
+  private BigDecimal planCostSumprice;
+  private BigDecimal planCostManprice;
+  private BigDecimal planCostMaterialsprice;
+  private BigDecimal planCostMechanicsprice;
+  private BigDecimal planCostDeviceprice;
+  private BigDecimal planCostSubpackageprice;
 
   private BigDecimal sort;
   private String ownId;
@@ -60,15 +63,15 @@ public class PlanDivision extends BaseReport implements ISumReportService {
   public void pushWorkAmount(BigDecimal value) {
 
     if (value == null) {
-      setWorkAmount(new BigDecimal(0));
-    } else setWorkAmount(value);
+      setPlanWorkAmount(new BigDecimal(0));
+    } else setPlanWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
     if (value == null) {
-      setCostUnitprice(new BigDecimal(0));
-    } else setCostUnitprice(value);
+      setPlanCostUnitprice(new BigDecimal(0));
+    } else setPlanCostUnitprice(value);
   }
   ;
 
@@ -76,24 +79,24 @@ public class PlanDivision extends BaseReport implements ISumReportService {
   public void pushSynthesisSumprice(BigDecimal value) {
 
     if (value == null) {
-      setCostSumprice(new BigDecimal(0));
-    } else setCostSumprice(value);
+      setPlanCostSumprice(new BigDecimal(0));
+    } else setPlanCostSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount() == null ? new BigDecimal(0) : getWorkAmount();
+    return getPlanWorkAmount() == null ? new BigDecimal(0) : getPlanWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getCostUnitprice() == null ? new BigDecimal(0) : getCostUnitprice();
+    return getPlanCostUnitprice() == null ? new BigDecimal(0) : getPlanCostUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getCostSumprice() == null ? new BigDecimal(0) : getCostSumprice();
+    return getPlanCostSumprice() == null ? new BigDecimal(0) : getPlanCostSumprice();
   }
 }

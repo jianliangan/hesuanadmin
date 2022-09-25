@@ -1,17 +1,17 @@
-package com.example.demo.controller.plan;
+package com.example.demo.controller.report;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.demo.controller.common.BaseController;
 import com.example.demo.entity.Base;
 import com.example.demo.entity.Project;
-import com.example.demo.entity.plan.PlanDivision;
+import com.example.demo.entity.report.TotalDivision;
 import com.example.demo.service.IMyService;
 import com.example.demo.service.IProjectService;
 import com.example.demo.service.common.PageData;
 import com.example.demo.service.common.WrapperOpt;
-import com.example.demo.service.plan.IPlanDivisionService;
 import com.example.demo.service.process.ITreeService;
 import com.example.demo.service.process.ITreeServiceConvert;
+import com.example.demo.service.report.ITotalDivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,16 +24,15 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping("/plan/division")
-public class PlanDivisionController extends BaseController<PlanDivision> {
-
-  @Autowired private IPlanDivisionService planDivisionService;
-  @Autowired private IProjectService projectService;
+@RequestMapping("/report/project")
+public class ReportProjectNewController extends BaseController<TotalDivision> {
+  @Autowired private ITotalDivisionService totalDivisionService;
   @Autowired private ITreeService treeService;
+  @Autowired private IProjectService projectService;
 
   @Override
   protected IMyService fetchService() {
-    return planDivisionService;
+    return null;
   }
 
   @Override
@@ -73,32 +72,33 @@ public class PlanDivisionController extends BaseController<PlanDivision> {
     int pageIndex = 1;
     String err = null;
     IPage userPage = null;
+
     ITreeServiceConvert treeServiceConvert =
         (Project project, List list) -> {
-          PlanDivision p1 = new PlanDivision();
+          TotalDivision p1 = new TotalDivision();
           p1.setOwnId(project.getOwnId());
           p1.setParentId(project.getParentId());
           p1.setSort(new BigDecimal(project.getSort()));
           p1.setDivisionId(project.getProjectId());
           p1.setProjectName(project.getProjectName());
           p1.setSource("project");
-          //          p1.pushWorkAmount(new BigDecimal(0));
-          //          p1.pushSynthesisSumprice(new BigDecimal(0));
-          //          p1.pushSynthesisUnitprice(new BigDecimal(0));
+
           list.add(p1);
         };
+
     err = commonPreFetchCheck(request);
     PageData pageData = null;
     if (err == null) {
       pageData =
-          ITreeService.<PlanDivision>getTreeWithPrice(
-              selectId, ownId, planDivisionService, projectService, treeServiceConvert);
+          ITreeService.<TotalDivision>getTreeWithPrice(
+              selectId, ownId, totalDivisionService, projectService, treeServiceConvert);
     }
     ResData resData = new ResData();
     resData.setCode("200");
     if (err != null) {
       resData.setErr(err);
     }
+
     resData.setData(pageData);
     resData.setMessage("");
     return resData;

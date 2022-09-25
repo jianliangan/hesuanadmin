@@ -3,12 +3,14 @@ package com.example.demo.entity.budget;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.entity.BaseReport;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
+@TableName("total_division")
 @Data
 public class BudgetDivision extends BaseReport implements ISumReportService {
   @TableId(type = IdType.INPUT)
@@ -23,13 +25,13 @@ public class BudgetDivision extends BaseReport implements ISumReportService {
   private String distinction;
   private String unit;
   private BigDecimal have;
-  private BigDecimal workAmount;
-  private BigDecimal synthesisUnitprice;
-  private BigDecimal synthesisSumprice;
-  private BigDecimal manageUnitprice;
-  private BigDecimal profitUnitprice;
-  private BigDecimal manageSumprice;
-  private BigDecimal profitSumprice;
+  private BigDecimal budgetWorkAmount;
+  private BigDecimal budgetSynthesisUnitprice;
+  private BigDecimal budgetSynthesisSumprice;
+  private BigDecimal budgetManageUnitprice;
+  private BigDecimal budgetProfitUnitprice;
+  private BigDecimal budgetManageSumprice;
+  private BigDecimal budgetProfitSumprice;
   private BigDecimal sort;
   private String ownId;
   private String parentId;
@@ -56,39 +58,41 @@ public class BudgetDivision extends BaseReport implements ISumReportService {
   @Override
   public void pushWorkAmount(BigDecimal value) {
     if (value == null) {
-      setWorkAmount(new BigDecimal(0));
-    } else setWorkAmount(value);
+      setBudgetWorkAmount(new BigDecimal(0));
+    } else setBudgetWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
     if (value == null) {
-      setSynthesisUnitprice(new BigDecimal(0));
-    } else setSynthesisUnitprice(value);
+      setBudgetSynthesisUnitprice(new BigDecimal(0));
+    } else setBudgetSynthesisUnitprice(value);
   }
   ;
 
   @Override
   public void pushSynthesisSumprice(BigDecimal value) {
     if (value == null) {
-      setSynthesisSumprice(new BigDecimal(0));
-    } else setSynthesisSumprice(value);
+      setBudgetSynthesisSumprice(new BigDecimal(0));
+    } else setBudgetSynthesisSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount() == null ? new BigDecimal(0) : getWorkAmount();
+    return getBudgetWorkAmount() == null ? new BigDecimal(0) : getBudgetWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getSynthesisUnitprice() == null ? new BigDecimal(0) : getSynthesisUnitprice();
+    return getBudgetSynthesisUnitprice() == null
+        ? new BigDecimal(0)
+        : getBudgetSynthesisUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getSynthesisSumprice() == null ? new BigDecimal(0) : getSynthesisSumprice();
+    return getBudgetSynthesisSumprice() == null ? new BigDecimal(0) : getBudgetSynthesisSumprice();
   }
 }

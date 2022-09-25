@@ -18,7 +18,7 @@ public abstract class Base {
   private List<Base> children = new ArrayList<Base>();
 
   @TableField(exist = false)
-  private String source;
+  private String source = "";
 
   public static String ab;
 

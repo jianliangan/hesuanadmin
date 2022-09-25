@@ -5,7 +5,6 @@ import com.example.demo.controller.common.BaseController;
 import com.example.demo.entity.Base;
 import com.example.demo.entity.Project;
 import com.example.demo.entity.actual.ActualDivision;
-import com.example.demo.entity.plan.PlanDivision;
 import com.example.demo.service.IMyService;
 import com.example.demo.service.IProjectService;
 import com.example.demo.service.actual.IActualDivisionService;
@@ -76,16 +75,14 @@ public class ActualDivisionController extends BaseController<ActualDivision> {
     IPage userPage = null;
     ITreeServiceConvert treeServiceConvert =
         (Project project, List list) -> {
-          PlanDivision p1 = new PlanDivision();
+          ActualDivision p1 = new ActualDivision();
           p1.setOwnId(project.getOwnId());
           p1.setParentId(project.getParentId());
           p1.setSort(new BigDecimal(project.getSort()));
           p1.setDivisionId(project.getProjectId());
           p1.setProjectName(project.getProjectName());
           p1.setSource("project");
-          p1.pushWorkAmount(new BigDecimal(0));
-          p1.pushSynthesisSumprice(new BigDecimal(0));
-          p1.pushSynthesisUnitprice(new BigDecimal(0));
+
           list.add(p1);
         };
     err = commonPreFetchCheck(request);

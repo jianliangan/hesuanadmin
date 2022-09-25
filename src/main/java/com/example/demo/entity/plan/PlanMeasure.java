@@ -1,14 +1,13 @@
 package com.example.demo.entity.plan;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.entity.Base;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
+@TableName("total_measure")
 @Data
 public class PlanMeasure extends Base implements ISumReportService {
   @TableId(type = IdType.INPUT)
@@ -23,15 +22,18 @@ public class PlanMeasure extends Base implements ISumReportService {
   private String distinction;
   private String unit;
   private BigDecimal have;
-  private BigDecimal workAmount;
+
+  @TableField(updateStrategy = FieldStrategy.NEVER)
   private BigDecimal budgetWorkAmount;
-  private BigDecimal costUnitprice;
-  private BigDecimal costSumprice;
-  private BigDecimal costManprice;
-  private BigDecimal costMaterialsprice;
-  private BigDecimal costMechanicsprice;
-  private BigDecimal costDeviceprice;
-  private BigDecimal costSubpackageprice;
+
+  private BigDecimal planWorkAmount;
+  private BigDecimal planCostUnitprice;
+  private BigDecimal planCostSumprice;
+  private BigDecimal planCostManprice;
+  private BigDecimal planCostMaterialsprice;
+  private BigDecimal planCostMechanicsprice;
+  private BigDecimal planCostDeviceprice;
+  private BigDecimal planCostSubpackageprice;
 
   private BigDecimal sort;
   private String ownId;
@@ -58,34 +60,34 @@ public class PlanMeasure extends Base implements ISumReportService {
 
   @Override
   public void pushWorkAmount(BigDecimal value) {
-    setWorkAmount(value);
+    setPlanWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
-    setCostUnitprice(value);
+    setPlanCostUnitprice(value);
   }
   ;
 
   @Override
   public void pushSynthesisSumprice(BigDecimal value) {
-    setCostSumprice(value);
+    setPlanCostSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount();
+    return getPlanWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getCostUnitprice();
+    return getPlanCostUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getCostSumprice();
+    return getPlanCostSumprice();
   }
 }

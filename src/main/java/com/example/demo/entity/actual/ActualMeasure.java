@@ -1,14 +1,13 @@
 package com.example.demo.entity.actual;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import com.example.demo.entity.Base;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
+@TableName("total_measure")
 @Data
 public class ActualMeasure extends Base implements ISumReportService {
   @TableId(type = IdType.INPUT)
@@ -23,15 +22,18 @@ public class ActualMeasure extends Base implements ISumReportService {
   private String distinction;
   private String unit;
   private BigDecimal have;
-  private BigDecimal workAmount;
+
+  @TableField(updateStrategy = FieldStrategy.NEVER)
   private BigDecimal budgetWorkAmount;
-  private BigDecimal costUnitprice;
-  private BigDecimal costSumprice;
-  private BigDecimal costManprice;
-  private BigDecimal costMaterialsprice;
-  private BigDecimal costMechanicsprice;
-  private BigDecimal costDeviceprice;
-  private BigDecimal costSubpackageprice;
+
+  private BigDecimal actualWorkAmount;
+  private BigDecimal actualCostUnitprice;
+  private BigDecimal actualCostSumprice;
+  private BigDecimal actualCostManprice;
+  private BigDecimal actualCostMaterialsprice;
+  private BigDecimal actualCostMechanicsprice;
+  private BigDecimal actualCostDeviceprice;
+  private BigDecimal actualCostSubpackageprice;
 
   private BigDecimal sort;
   private String ownId;
@@ -58,34 +60,34 @@ public class ActualMeasure extends Base implements ISumReportService {
 
   @Override
   public void pushWorkAmount(BigDecimal value) {
-    setWorkAmount(value);
+    setActualWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
-    setCostUnitprice(value);
+    setActualCostUnitprice(value);
   }
   ;
 
   @Override
   public void pushSynthesisSumprice(BigDecimal value) {
-    setCostSumprice(value);
+    setActualCostSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount();
+    return getActualWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getCostUnitprice();
+    return getActualCostUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getCostSumprice();
+    return getActualCostSumprice();
   }
 }

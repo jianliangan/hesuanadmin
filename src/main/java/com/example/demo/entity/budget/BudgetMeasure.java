@@ -3,12 +3,14 @@ package com.example.demo.entity.budget;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.demo.entity.Base;
 import com.example.demo.service.common.ISumReportService;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
+@TableName("total_measure")
 @Data
 public class BudgetMeasure extends Base implements ISumReportService {
   @TableId(type = IdType.INPUT)
@@ -22,13 +24,13 @@ public class BudgetMeasure extends Base implements ISumReportService {
   private String distinction;
   private String unit;
   private BigDecimal have;
-  private BigDecimal workAmount;
-  private BigDecimal synthesisUnitprice;
-  private BigDecimal synthesisSumprice;
-  private BigDecimal manageUnitprice;
-  private BigDecimal profitUnitprice;
-  private BigDecimal manageSumprice;
-  private BigDecimal profitSumprice;
+  private BigDecimal budgetWorkAmount;
+  private BigDecimal budgetSynthesisUnitprice;
+  private BigDecimal budgetSynthesisSumprice;
+  private BigDecimal budgetManageUnitprice;
+  private BigDecimal budgetProfitUnitprice;
+  private BigDecimal budgetManageSumprice;
+  private BigDecimal budgetProfitSumprice;
   private BigDecimal sort;
   private String ownId;
   private String parentId;
@@ -54,34 +56,34 @@ public class BudgetMeasure extends Base implements ISumReportService {
 
   @Override
   public void pushWorkAmount(BigDecimal value) {
-    setWorkAmount(value);
+    setBudgetWorkAmount(value);
   }
 
   @Override
   public void pushSynthesisUnitprice(BigDecimal value) {
-    setSynthesisUnitprice(value);
+    setBudgetSynthesisUnitprice(value);
   }
   ;
 
   @Override
   public void pushSynthesisSumprice(BigDecimal value) {
-    setSynthesisSumprice(value);
+    setBudgetSynthesisSumprice(value);
   }
 
   @Override
   public BigDecimal fetchWorkAmount() {
-    return getWorkAmount();
+    return getBudgetWorkAmount();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisUnitprice() {
-    return getSynthesisUnitprice();
+    return getBudgetSynthesisUnitprice();
   }
   ;
 
   @Override
   public BigDecimal fetchSynthesisSumprice() {
-    return getSynthesisSumprice();
+    return getBudgetSynthesisSumprice();
   }
 }
