@@ -54,7 +54,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/com/example/demo/entity" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../myjavasvn/hesuanadmin" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="模块" />
     <property name="project.structure.proportion" value="0.15" />
@@ -70,11 +70,11 @@
       <recent name="D:\myjava\hesuanadmin\src\main\java\com\example\demo\controller\common" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.example.demo.service.process" />
-      <recent name="com.example.demo.service.common" />
-      <recent name="com.example.demo.entity.report" />
-      <recent name="com.example.demo.service.impl.process" />
-      <recent name="com.example.demo.controller.common" />
+      <recent name="com.example.demo.controller.report" />
+      <recent name="com.example.demo.service.impl.report" />
+      <recent name="com.example.demo.service.report" />
+      <recent name="com.example.demo.mapper.report" />
+      <recent name="com.example.demo.controller.dict" />
     </key>
   </component>
   <component name="RunManager">
@@ -157,7 +157,13 @@
       <workItem from="1663807291204" duration="4438000" />
       <workItem from="1663824836914" duration="16960000" />
       <workItem from="1663884024612" duration="45536000" />
-      <workItem from="1663972406468" duration="5958000" />
+      <workItem from="1663972406468" duration="18719000" />
+      <workItem from="1664060446539" duration="3025000" />
+      <workItem from="1664078470880" duration="9830000" />
+      <workItem from="1664091621681" duration="16297000" />
+      <workItem from="1664154477422" duration="6168000" />
+      <workItem from="1664196741360" duration="522000" />
+      <workItem from="1664235904356" duration="4624000" />
     </task>
     <servers />
   </component>

@@ -65,9 +65,11 @@ public class ReportSubPackageController extends BaseController<TotalDivision> {
   public ResData getTree2(HttpServletRequest request) {
 
     String ownId = request.getParameter("ownId"); // 只用树做对比不能用在where后面
-    ownId = "";
-    String selectId = request.getParameter("selectId"); //
-
+    String projectId = request.getParameter("projectId"); //
+    String subPackageId = request.getParameter("subPackageId"); //
+    if (ownId.equals("0")) {
+      ownId = projectId;
+    }
     List<Base> prelist = null;
     List<Base> relist = null;
     int pageIndex = 1;
@@ -91,12 +93,13 @@ public class ReportSubPackageController extends BaseController<TotalDivision> {
     PageData pageData = null;
     if (err == null) {
       pageData =
-          ITreeService.<TotalDivision>getTreeWithPriceByPackage(
-              selectId,
-              ownId,
+          ITreeService.<TotalDivision>getTreeWithPriceWithPackage(
+              projectId,
+              subPackageId,
               totalDivisionService,
-              actualDivisionMachineService,
-              treeServiceConvert);
+              projectService,
+              treeServiceConvert,
+              actualDivisionMachineService);
     }
     ResData resData = new ResData();
     resData.setCode("200");

@@ -4,7 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.demo.entity.Base;
 import com.example.demo.entity.BaseReport;
 import com.example.demo.entity.Project;
-import com.example.demo.entity.budget.machine.BudgetDivisionMachine;
+import com.example.demo.entity.actual.machine.ActualDivisionMachine;
+import com.example.demo.entity.report.TotalDivision;
 import com.example.demo.service.IMyService;
 import com.example.demo.service.IProjectService;
 import com.example.demo.service.actual.machine.IActualDivisionMachineService;
@@ -15,15 +16,19 @@ import com.example.demo.service.common.WrapperOpt;
 import com.example.demo.service.report.ITotalDivisionService;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public interface ITreeService {
-  public static <T extends Base & ISumReportService> PageData getTreeWithPriceByPackage(
+  public static <T extends Base & ISumReportService> PageData getTreeWithPriceWithPackage(
       String selectId,
-      String ownId,
-      ITotalDivisionService actualDivisionService,
-      IActualDivisionMachineService actualDivisionMachineService,
-      ITreeServiceConvert treeServiceConvert) {
+      String subPackageId,
+      ITotalDivisionService totalDivisionService,
+      IProjectService projectService,
+      ITreeServiceConvert treeServiceConvert,
+      IActualDivisionMachineService actualDivisionMachineService) {
 
     ArrayList<T> prelist = new ArrayList<T>();
     ArrayList<Base> relist = new ArrayList<Base>();
@@ -31,6 +36,12 @@ public interface ITreeService {
     List instr = new ArrayList<String>();
     int pageIndex = 1;
     // 找到选中的，作为最大的那个节点
+    Project project = projectService.getById(selectId);
+    // 放入大树
+
+    instr.add(project.getProjectId());
+    // 从项目节点中找到选中节点下面的所有子节点
+    // System.out.println(",,,,,33000,,,,," + project);
     Page page = new Page(pageIndex, 1000);
     WrapperOpt wrapperOpt = new WrapperOpt();
     wrapperOpt.orderIsAsc = true;
@@ -38,18 +49,28 @@ public interface ITreeService {
     wrapperOpt.orderColumn = new ArrayList<>();
     wrapperOpt.orderColumn.add("sort");
     wrapperOpt.wheres = new HashMap<String, String>();
-    wrapperOpt.wheres.put("sub_package", selectId);
-    Page userPage =
-        actualDivisionMachineService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt));
-    List<BudgetDivisionMachine> list = userPage.getRecords();
-    // 放入in数组
-    Map tmp = new HashMap<String, String>();
+    wrapperOpt.wheres.put("own_id", subPackageId);
+    Page userPage = projectService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt));
+    List<Base> list = userPage.getRecords();
+    // 树扁平化
+    List<Base> tmplist = new ArrayList<Base>();
     for (int i = 0; i < list.size(); i++) {
-      tmp.put(list.get(i).getParentId(), list.get(i).getParentId());
-    }
-    Set tmpset = tmp.keySet();
+      Base value = list.get(i);
+      if (value.fetchParentId().toString().equals(selectId)) {
+        list.remove(i);
+        tmplist.add(value);
+        treeLoop0(value, list, tmplist);
 
-    // 从项目节点中找到选中节点下面的所有子节点
+        i = -1;
+      }
+    }
+
+    for (int i = 0; i < tmplist.size(); i++) {
+
+      instr.add(tmplist.get(i).fetchPrimeId());
+      // 放入大数组
+      treeServiceConvert.convertProject2((Project) tmplist.get(i), prelist);
+    }
 
     // 去查division
     Page page2 = new Page(pageIndex, 1000);
@@ -58,17 +79,55 @@ public interface ITreeService {
     wrapperOpt2.orderCondition = true;
     wrapperOpt2.orderColumn = new ArrayList<>();
     wrapperOpt2.orderColumn.add("sort");
-
-    if (tmpset.size() > 0) {
+    if (instr.size() > 0) {
       wrapperOpt2.ins = new HashMap<String, List<String>>();
-      wrapperOpt2.ins.put("division_id", new ArrayList<String>(tmpset));
+      wrapperOpt2.ins.put("own_id", instr);
     }
-    userPage = (Page) actualDivisionService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
-    List<T> list2 = userPage.getRecords();
-分包商和项目怎么展示
+    userPage = (Page) totalDivisionService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt2));
+    List<TotalDivision> list2 = userPage.getRecords();
+    // 从division里去掉不属于分包商的
+
+    Page page3 = new Page(pageIndex, 1000);
+    WrapperOpt wrapperOpt3 = new WrapperOpt();
+    wrapperOpt.wheres = new HashMap<String, String>();
+    wrapperOpt.wheres.put("sub_package_id", subPackageId);
+    userPage =
+        (Page) actualDivisionMachineService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt3));
+    List<ActualDivisionMachine> list3 = userPage.getRecords();
+    System.out.println(list3);
+    Map<Object, BigDecimal[]> list3Map = new HashMap<Object, BigDecimal[]>();
+    for (int i = 0; i < list3.size(); i++) {
+      Object key = list3.get(i).fetchParentId();
+      BigDecimal[] value = list3Map.get(key);
+      if (value == null) {
+        list3Map.put(
+            key,
+            new BigDecimal[] {
+              list3.get(i).getCount(), list3.get(i).getPrice(), list3.get(i).getCombinedPrice()
+            });
+      } else {
+        value[0] = value[0].add(list3.get(i).getCount());
+        value[1] = value[1].add(list3.get(i).getPrice());
+        value[2] = value[2].add(list3.get(i).getCombinedPrice());
+      }
+    }
+    //除去本分包商的内容
+    for(int i = 0; i < list2.size(); i++){
+      Object key=list2.get(i).fetchPrimeId();
+      if(list2.get(i).getCode()==null||list2.get(i).getCode().length()==0){
+        continue;
+      }else{
+        if(list3Map.containsKey(key)){
+          list2.get(i).set
+        }else{
+
+        }
+      }
+    }
     // 放入大数组
     prelist.addAll(list2);
     List<T> resist = new ArrayList<T>();
+    treeServiceConvert.convertProject2(project, resist);
     // 做树形渲染
     treeLoop1((T) resist.get(0), prelist);
     PageData pageData = new PageData();
@@ -78,6 +137,75 @@ public interface ITreeService {
 
     return pageData;
   }
+
+  //        String selectId,
+  //        String ownId,
+  //        ITotalDivisionService actualDivisionService,
+  //        IActualDivisionMachineService actualDivisionMachineService,
+  //        ITreeServiceConvert treeServiceConvert) {
+  //
+  //    }
+  //  public static <T extends Base & ISumReportService> PageData getTreeWithPriceByPackage(
+  //      String selectId,
+  //      String ownId,
+  //      ITotalDivisionService actualDivisionService,
+  //      IActualDivisionMachineService actualDivisionMachineService,
+  //      ITreeServiceConvert treeServiceConvert) {
+  //
+  //    ArrayList<T> prelist = new ArrayList<T>();
+  //    ArrayList<Base> relist = new ArrayList<Base>();
+  //    // 把所有需要显示的项目相关id放入数组
+  //    List instr = new ArrayList<String>();
+  //    int pageIndex = 1;
+  //    // 找到选中的，作为最大的那个节点
+  //    Page page = new Page(pageIndex, 1000);
+  //    WrapperOpt wrapperOpt = new WrapperOpt();
+  //    wrapperOpt.orderIsAsc = true;
+  //    wrapperOpt.orderCondition = true;
+  //    wrapperOpt.orderColumn = new ArrayList<>();
+  //    wrapperOpt.orderColumn.add("sort");
+  //    wrapperOpt.wheres = new HashMap<String, String>();
+  //    wrapperOpt.wheres.put("sub_package", selectId);
+  //    Page userPage =
+  //        actualDivisionMachineService.page(page, WrapperOpt.parseWrapperOption(wrapperOpt));
+  //    List<BudgetDivisionMachine> list = userPage.getRecords();
+  //    // 放入in数组
+  //    Map tmp = new HashMap<String, String>();
+  //    for (int i = 0; i < list.size(); i++) {
+  //      tmp.put(list.get(i).getParentId(), list.get(i).getParentId());
+  //    }
+  //    Set tmpset = tmp.keySet();
+  //
+  //    // 从项目节点中找到选中节点下面的所有子节点
+  //
+  //    // 去查division
+  //    Page page2 = new Page(pageIndex, 1000);
+  //    WrapperOpt wrapperOpt2 = new WrapperOpt();
+  //    wrapperOpt2.orderIsAsc = true;
+  //    wrapperOpt2.orderCondition = true;
+  //    wrapperOpt2.orderColumn = new ArrayList<>();
+  //    wrapperOpt2.orderColumn.add("sort");
+  //
+  //    if (tmpset.size() > 0) {
+  //      wrapperOpt2.ins = new HashMap<String, List<String>>();
+  //      wrapperOpt2.ins.put("division_id", new ArrayList<String>(tmpset));
+  //    }
+  //    userPage = (Page) actualDivisionService.page(page,
+  // WrapperOpt.parseWrapperOption(wrapperOpt2));
+  //    List<T> list2 = userPage.getRecords();
+  //
+  //    // 放入大数组
+  //    prelist.addAll(list2);
+  //    List<T> resist = new ArrayList<T>();
+  //    // 做树形渲染
+  //    treeLoop1((T) resist.get(0), prelist);
+  //    PageData pageData = new PageData();
+  //    pageData.setItemTotal(userPage.getTotal());
+  //    pageData.setPageSize(userPage.getSize());
+  //    pageData.setList(resist);
+  //
+  //    return pageData;
+  //  }
 
   public static <T extends Base & ISumReportService> PageData getTreeWithPrice(
       String selectId,

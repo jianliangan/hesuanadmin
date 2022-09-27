@@ -63,9 +63,10 @@ public class ReportProjectNewController extends BaseController<TotalDivision> {
   public ResData getTree2(HttpServletRequest request) {
 
     String ownId = request.getParameter("ownId"); // 只用树做对比不能用在where后面
-    String selectId = request.getParameter("selectId"); //
+    String projectId = request.getParameter("projectId"); //
+    String subPackageId = request.getParameter("subPackageId"); //
     if (ownId.equals("0")) {
-      ownId = selectId;
+      ownId = projectId;
     }
     List<Base> prelist = null;
     List<Base> relist = null;
@@ -91,7 +92,7 @@ public class ReportProjectNewController extends BaseController<TotalDivision> {
     if (err == null) {
       pageData =
           ITreeService.<TotalDivision>getTreeWithPrice(
-              selectId, ownId, totalDivisionService, projectService, treeServiceConvert);
+              projectId, ownId, totalDivisionService, projectService, treeServiceConvert);
     }
     ResData resData = new ResData();
     resData.setCode("200");
