@@ -1,0 +1,6 @@
+[04/Oct/2022:09:13:06 +0800] 0:0:0:0:0:0:0:1 "OPTIONS /system/users/token HTTP/1.1" 200 (91 ms)
+[04/Oct/2022:09:13:08 +0800] 0:0:0:0:0:0:0:1 "POST /system/users/token HTTP/1.1" 200 (1281 ms)
+[04/Oct/2022:09:13:08 +0800] 0:0:0:0:0:0:0:1 "OPTIONS /system/index/getmenu HTTP/1.1" 200 (2 ms)
+[04/Oct/2022:09:13:08 +0800] 0:0:0:0:0:0:0:1 "GET /system/index/getmenu HTTP/1.1" 200 (106 ms)
+[04/Oct/2022:09:13:08 +0800] 0:0:0:0:0:0:0:1 "OPTIONS /home/project/fetch/?ownId=0 HTTP/1.1" 200 (3 ms)
+[04/Oct/2022:09:13:08 +0800] 0:0:0:0:0:0:0:1 "GET /home/project/fetch/?ownId=0 HTTP/1.1" 200 (254 ms)

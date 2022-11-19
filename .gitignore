@@ -1,0 +1,27 @@
+.DS_Store
+node_modules
+/dist
+upload-dir
+target
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+target
+pnpm-debug.log*
+my-tomcat
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+/.idea
+/log
+/src/main/resources/static
